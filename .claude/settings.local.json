@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where python:*)",
+      "Bash(py --version)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(pip3 install:*)",
+      "Bash(lsof:*)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(pyinstaller SlimTransfer.spec --clean)",
+      "Bash(pip3 show:*)"
+    ]
+  }
+}
