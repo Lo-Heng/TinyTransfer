@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    slim_transfer_lib::run()
+    tiny_transfer_lib::run()
 }

@@ -1,8 +1,8 @@
 [package]
-name = "slim-transfer"
+name = "tiny-transfer"
 version = "0.1.0"
-description = "SlimTransfer - Fast LAN file sharing"
-authors = ["SlimTransfer Team"]
+description = "TinyTransfer - Fast LAN file sharing"
+authors = ["Lo-Heng"]
 license = "PolyForm-Noncommercial-1.0.0"
 edition = "2021"
 
@@ -43,7 +43,7 @@ rand = "0.8"
 windows-sys = { version = "0.59", features = ["Win32_Graphics_Dwm", "Win32_Foundation"] }
 
 [lib]
-name = "slim_transfer_lib"
+name = "tiny_transfer_lib"
 crate-type = ["lib"]
 
 [[bin]]

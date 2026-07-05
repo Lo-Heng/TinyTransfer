@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title Slim Transfer - Tauri Build
+title TinyTransfer - Tauri Build
 
 set "ROOT=%~dp0"
 if "%ROOT:~-1%"=="\" set "ROOT=%ROOT:~0,-1%"
@@ -15,7 +15,7 @@ cd /d "%SRC%"
 
 echo.
 echo ========================================
-echo    Slim Transfer - Tauri Build
+echo    TinyTransfer - Tauri Build
 echo    Toolchain: GNU (MinGW built-in)
 echo ========================================
 echo.

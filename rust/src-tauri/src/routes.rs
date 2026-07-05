@@ -456,7 +456,7 @@ pub async fn download_zip(
     }
 
     let timestamp = chrono::Local::now().format("%Y%m%d_%H%M%S");
-    let zip_name = format!("slim_transfer_{}.zip", timestamp);
+    let zip_name = format!("TinyTransfer_{}.zip", timestamp);
 
     Response::builder()
         .status(StatusCode::OK)
