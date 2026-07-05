@@ -3,32 +3,46 @@ rust/target/
 rust/**/target/
 
 # Tauri generated
-rust/src-tauri/gen/schemas/
+rust/src-tauri/gen/
 
 # Output / runtime
 output/
 share/
 uploads/
 
+# Tools (MinGW, UPX, etc.)
+tools/
+
 # OS files
 .DS_Store
 Thumbs.db
 desktop.ini
+nul
 
 # IDE
 .vscode/
 .idea/
+.claude/
+.trae/
 *.swp
 *.swo
 
 # WorkBuddy
 .workbuddy/
 
-# Python remnants (if any)
-__pycache__/
-*.pyc
-*.pyo
+# Build logs / temp files
+build-*.txt
+build-*.ps1
+copy-exe.ps1
+tmp_*.py
+*.bak
 
 # Logs
 *.log
 debug.log
+
+# Rust src-tauri dist static (optional, embedded in binary)
+rust/src-tauri/dist/static/
+
+# skills lock
+skills-lock.json

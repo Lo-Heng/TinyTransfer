@@ -75,6 +75,11 @@ pub struct DownloadZipRequest {
     pub filenames: Vec<String>,
 }
 
+#[derive(Deserialize)]
+pub struct SetTitlebarRequest {
+    pub is_dark: bool,
+}
+
 #[derive(Debug, Serialize)]
 pub struct OpenFolderResponse {
     pub success: bool,
@@ -217,22 +222,7 @@ pub async fn get_ip(State(state): State<Arc<AppState>>) -> impl IntoResponse {
 // ============================================================
 
 pub async fn list_files(State(state): State<Arc<AppState>>) -> impl IntoResponse {
-    Json(json!({ "files": state.file_manager.list_shared_files() }))
-}
-
-pub async fn list_uploaded_files(State(state): State<Arc<AppState>>) -> impl IntoResponse {
-    Json(json!({ "files": state.file_manager.list_uploaded_files() }))
-}
-
-pub async fn list_all_files(State(state): State<Arc<AppState>>) -> impl IntoResponse {
-    let host_device = match std::env::consts::OS {
-        "macos" => "Mac",
-        "windows" => "PC",
-        _ => "Linux",
-    };
-    Json(json!({
-        "files": state.file_manager.list_all_files(host_device)
-    }))
+    Json(json!({ "files": state.file_manager.list_files() }))
 }
 
 // ============================================================
@@ -289,32 +279,48 @@ pub async fn upload_file(
         .unwrap_or("");
     let device_type = crate::utils::parse_user_agent(ua).device_type;
 
-    while let Ok(Some(field)) = multipart.next_field().await {
+    while let Ok(Some(mut field)) = multipart.next_field().await {
         if field.name() == Some("file") {
             if let Some(filename) = field.file_name().map(|s| s.to_string()) {
-                match field.bytes().await {
-                    Ok(data) => {
-                        if let Some(saved) =
-                            state.file_manager.save_uploaded_file(&filename, &data, &device_type)
-                        {
-                            return Json(json!({
-                                "success": true,
-                                "filename": saved
-                            }));
-                        } else {
-                            return Json(json!({
-                                "success": false,
-                                "error": "保存文件失败"
-                            }));
+                let safe = crate::utils::secure_filename(&filename);
+                // 测速文件不落盘
+                if safe.starts_with("speed-test") {
+                    return Json(json!({"success": true, "filename": safe}));
+                }
+                let file_path = state.file_manager.unique_filepath(&safe);
+                let saved_name = file_path
+                    .file_name()
+                    .map(|n| n.to_string_lossy().to_string())
+                    .unwrap_or_else(|| safe.clone());
+
+                // 流式写入磁盘，不把整个文件读入内存
+                let mut file = match tokio::fs::File::create(&file_path).await {
+                    Ok(f) => f,
+                    Err(e) => return Json(json!({"success": false, "error": format!("创建文件失败: {e}")})),
+                };
+                loop {
+                    match field.next().await {
+                        Some(Ok(chunk)) => {
+                            if let Err(e) = tokio::io::AsyncWriteExt::write_all(&mut file, &chunk).await {
+                                let _ = tokio::fs::remove_file(&file_path).await;
+                                return Json(json!({"success": false, "error": format!("写入失败: {e}")}));
+                            }
                         }
-                    }
-                    Err(e) => {
-                        return Json(json!({
-                            "success": false,
-                            "error": format!("读取文件失败: {e}")
-                        }));
+                        Some(Err(e)) => {
+                            let _ = tokio::fs::remove_file(&file_path).await;
+                            return Json(json!({"success": false, "error": format!("读取数据失败: {e}")}));
+                        }
+                        None => break,
                     }
                 }
+                if let Err(e) = file.sync_all().await {
+                    let _ = tokio::fs::remove_file(&file_path).await;
+                    return Json(json!({"success": false, "error": format!("同步文件失败: {e}")}));
+                }
+                state.file_manager.save_upload_meta(&saved_name, &device_type);
+                // 通知所有端文件列表已更新
+                state.broker.broadcast("file_list_updated", json!({"action": "upload"}));
+                return Json(json!({"success": true, "filename": saved_name}));
             }
         }
     }
@@ -364,6 +370,8 @@ pub async fn upload_chunk(
                         .unwrap_or("");
                     let device_type = crate::utils::parse_user_agent(ua).device_type;
                     state.file_manager.save_upload_meta(saved, &device_type);
+                    // 通知所有端文件列表已更新
+                    state.broker.broadcast("file_list_updated", json!({"action": "upload"}));
                 }
 
                 Json(json!({
@@ -462,6 +470,14 @@ pub async fn download_zip(
         .into_response()
 }
 
+pub async fn set_titlebar_color(
+    State(state): State<Arc<AppState>>,
+    Json(req): Json<SetTitlebarRequest>,
+) -> impl IntoResponse {
+    let _ = state.titlebar_color_tx.send(Some(req.is_dark));
+    Json(json!({"success": true}))
+}
+
 // ============================================================
 // 磁盘 / 文件夹
 // ============================================================
@@ -476,22 +492,29 @@ pub async fn disk_info(State(state): State<Arc<AppState>>) -> impl IntoResponse 
     }
 }
 
+pub async fn open_folder_default(
+    State(state): State<Arc<AppState>>,
+) -> impl IntoResponse {
+    let path = state.file_manager.upload_folder.clone();
+    let result = tokio::task::spawn_blocking(move || open_folder_os(std::path::Path::new(&path)))
+        .await
+        .unwrap_or(Err("任务执行失败".into()));
+    match result {
+        Ok(_) => Json(OpenFolderResponse { success: true, error: None }),
+        Err(e) => Json(OpenFolderResponse { success: false, error: Some(e) }),
+    }
+}
+
 pub async fn open_folder(
     State(state): State<Arc<AppState>>,
     Path(folder_type): Path<String>,
 ) -> impl IntoResponse {
     let path = match folder_type.as_str() {
-        "share" => state.share_folder.clone(),
-        "uploads" => state.upload_folder.clone(),
-        _ => {
-            return Json(OpenFolderResponse {
-                success: false,
-                error: Some("Invalid folder type".into()),
-            })
-        }
+        "uploads" => state.file_manager.upload_folder.clone(),
+        _ => state.file_manager.upload_folder.clone(),
     };
 
-    let result = tokio::task::spawn_blocking(move || open_folder_os(&path))
+    let result = tokio::task::spawn_blocking(move || open_folder_os(std::path::Path::new(&path)))
         .await
         .unwrap_or(Err("任务执行失败".into()));
 

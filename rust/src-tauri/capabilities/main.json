@@ -1,1 +1,24 @@
-{"identifier": "main-capability", "description": "Allow the main window to load from localhost HTTP server", "windows": ["main"], "permissions": ["core:default", "core:window:allow-set-size", "core:window:allow-set-position", "core:window:allow-set-focus", "core:window:allow-show", "core:window:allow-hide", "core:window:allow-close", "opener:default"]}
+{
+  "identifier": "main-capability",
+  "description": "Allow the main window to load from localhost HTTP server, and enable custom titlebar controls",
+  "windows": ["main"],
+  "local": true,
+  "remote": {
+    "urls": ["http://127.0.0.1:5000", "http://localhost:5000"]
+  },
+  "permissions": [
+    "core:default",
+    "core:window:allow-set-size",
+    "core:window:allow-set-position",
+    "core:window:allow-set-focus",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-close",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-start-dragging",
+    "opener:default",
+    "dialog:default",
+    "app-commands"
+  ]
+}

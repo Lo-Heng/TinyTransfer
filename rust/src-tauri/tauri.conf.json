@@ -1,8 +1,8 @@
 {
-  "$schema": "https://schema.tauri.app/config/2",
-  "productName": "SlimTransfer",
+  "$schema": "https://schemas.tauri.app/config/2",
+  "productName": "Tiny Transfer",
   "version": "0.1.0",
-  "identifier": "com.slimtransfer.app",
+  "identifier": "com.tinytransfer.app",
   "build": {
     "beforeDevCommand": "",
     "beforeBuildCommand": "",
@@ -10,20 +10,34 @@
     "devUrl": "http://127.0.0.1:5000/"
   },
   "app": {
+    "withGlobalTauri": true,
     "security": {
       "csp": null
-    }
+    },
+    "windows": [
+      {
+        "label": "main",
+        "title": "TinyTransfer",
+        "width": 1100,
+        "height": 780,
+        "minWidth": 800,
+        "minHeight": 600,
+        "decorations": true,
+        "transparent": false,
+        "visible": false
+      }
+    ]
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis"],
+    "targets": ["app"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.ico"
     ],
-    "copyright": "© 2026 SlimTransfer",
+    "copyright": "© 2026 TinyTransfer",
     "category": "Utility",
     "windows": {
       "webviewInstallMode": {

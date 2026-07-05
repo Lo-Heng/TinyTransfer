@@ -43,7 +43,24 @@ pub async fn start_server(
     Ok(())
 }
 
+/// 从磁盘查找 static 文件，按优先级查找
+fn find_static_file(path: &str) -> Option<std::path::PathBuf> {
+    let candidates = vec![
+        std::env::current_dir().ok().map(|p| p.join("dist/static").join(path)),
+        std::env::current_dir().ok().map(|p| p.join("src-tauri/dist/static").join(path)),
+        std::env::current_exe().ok().and_then(|p| p.parent().map(|p| p.join("dist/static").join(path))),
+    ];
+    
+    for candidate in candidates.iter().flatten() {
+        if candidate.exists() && candidate.is_file() {
+            return Some(candidate.clone());
+        }
+    }
+    None
+}
+
 /// 从嵌入的 static 目录提供文件（作为 ServeDir 的 fallback）
+/// 优先读取磁盘 dist/static/ 目录（开发时实时生效），找不到再回退到嵌入版本
 async fn embedded_static(request: Request) -> Response {
     let path = request
         .uri()
@@ -51,6 +68,19 @@ async fn embedded_static(request: Request) -> Response {
         .trim_start_matches("/static/")
         .trim_start_matches('/');
 
+    // 优先尝试磁盘
+    if let Some(disk_path) = find_static_file(path) {
+        if let Ok(content) = std::fs::read(&disk_path) {
+            let mime = mime_guess::from_path(path).first_or_octet_stream();
+            return Response::builder()
+                .status(StatusCode::OK)
+                .header(CONTENT_TYPE, mime.as_ref())
+                .body(Body::from(content))
+                .unwrap();
+        }
+    }
+
+    // 回退到嵌入版本
     match EMBEDDED_STATIC.get_file(path) {
         Some(file) => {
             let mime = mime_guess::from_path(path).first_or_octet_stream();
@@ -75,17 +105,17 @@ pub fn build_router(state: Arc<AppState>) -> Router {
         .route("/check-auth", get(routes::check_auth))
         .route("/auth", post(routes::post_auth))
         .route("/files", get(routes::list_files))
-        .route("/uploaded-files", get(routes::list_uploaded_files))
-        .route("/all-files", get(routes::list_all_files))
         .route("/download/:filename", get(routes::download_file))
         .route("/upload", post(routes::upload_file))
         .route("/upload-chunk", post(routes::upload_chunk))
         .route("/delete-files", post(routes::delete_files))
-        .route("/download-zip", post(routes::download_zip))
+        .route("/download-zip", get(routes::download_zip).post(routes::download_zip))
         .route("/disk-info", get(routes::disk_info))
+        .route("/open-folder", get(routes::open_folder_default))
         .route("/open-folder/:folder_type", get(routes::open_folder))
         .route("/events", get(routes::sse_events))
-        .route("/ping", post(routes::ping_device));
+        .route("/ping", post(routes::ping_device))
+        .route("/set-titlebar-color", post(routes::set_titlebar_color));
 
     // 静态文件服务：优先磁盘 static/ 目录，未命中时回退到内嵌资源
     let static_dir = std::env::current_exe()

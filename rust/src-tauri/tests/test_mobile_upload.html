@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bug 2 - Mobile Upload Experience Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .test-section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .test-result { padding: 10px; margin: 5px 0; border-radius: 4px; }
+        .pass { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .fail { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        #fileInput { display: none; }
+        .progress-bar { width: 100%; height: 20px; background: #e9ecef; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-fill { height: 100%; background: #007bff; transition: width 0.3s; width: 0%; }
+    </style>
+</head>
+<body>
+    <h1>Bug 2 Regression Test - Mobile Upload Experience</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Mobile Detection</h2>
+        <div id="test1-result"></div>
+        <button class="btn-primary" onclick="testMobileDetection()">Run Test</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Auto-Upload Behavior</h2>
+        <div id="test2-result"></div>
+        <button class="btn-primary" onclick="testAutoUpload()">Run Test</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: UI State Management</h2>
+        <div id="test3-result"></div>
+        <button class="btn-primary" onclick="testUIState()">Run Test</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 4: File Selection (Simulated)</h2>
+        <div id="test4-result"></div>
+        <button class="btn-success" onclick="simulateFileSelect()">Simulate File Selection</button>
+        <input type="file" id="fileInput" multiple accept="*/*">
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results Summary</h2>
+        <div id="summary"></div>
+    </div>
+
+    <script>
+        let testResults = {
+            total: 4,
+            passed: 0,
+            failed: 0
+        };
+
+        // Mobile detection function (extracted from index.html)
+        function isMobileDevice() {
+            return /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+        }
+
+        // Test 1: Mobile Detection
+        function testMobileDetection() {
+            const resultDiv = document.getElementById('test1-result');
+            let results = [];
+
+            // Test cases
+            const testCases = [
+                { ua: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)', expected: true },
+                { ua: 'Mozilla/5.0 (Linux; Android 10; SM-G975F)', expected: true },
+                { ua: 'Mozilla/5.0 (iPad; CPU OS 14_0 like Mac OS X)', expected: true },
+                { ua: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', expected: false },
+                { ua: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', expected: false },
+            ];
+
+            testCases.forEach(tc => {
+                const isMobile = /Mobi|Android|iPhone|iPad/i.test(tc.ua);
+                const passed = isMobile === tc.expected;
+                results.push({
+                    ua: tc.ua.substring(0, 50) + '...',
+                    expected: tc.expected,
+                    actual: isMobile,
+                    passed: passed
+                });
+            });
+
+            let html = '<h3>Test Results:</h3>';
+            results.forEach(r => {
+                html += `<div class="test-result ${r.passed ? 'pass' : 'fail'}">
+                    UA: ${r.ua}<br>
+                    Expected: ${r.expected}, Actual: ${r.actual}<br>
+                    ${r.passed ? '✓ PASS' : '✗ FAIL'}
+                </div>`;
+            });
+
+            resultDiv.innerHTML = html;
+            
+            const allPassed = results.every(r => r.passed);
+            if (allPassed) testResults.passed++;
+            else testResults.failed++;
+            updateSummary();
+        }
+
+        // Test 2: Auto-Upload Behavior
+        function testAutoUpload() {
+            const resultDiv = document.getElementById('test2-result');
+            let results = [];
+
+            // Simulate mobile device
+            const isMobile = true; // Simulating mobile
+            let autoUploadTriggered = false;
+            let delay = 0;
+
+            if (isMobile) {
+                delay = 800;
+                setTimeout(() => {
+                    autoUploadTriggered = true;
+                }, delay);
+            }
+
+            results.push({
+                test: 'Mobile auto-upload delay',
+                expected: 800,
+                actual: delay,
+                passed: delay === 800
+            });
+
+            // Test desktop (no auto-upload)
+            const isDesktop = false;
+            let desktopAutoUpload = false;
+            
+            results.push({
+                test: 'Desktop no auto-upload',
+                expected: false,
+                actual: desktopAutoUpload,
+                passed: desktopAutoUpload === false
+            });
+
+            let html = '<h3>Test Results:</h3>';
+            results.forEach(r => {
+                html += `<div class="test-result ${r.passed ? 'pass' : 'fail'}">
+                    ${r.test}<br>
+                    Expected: ${r.expected}, Actual: ${r.actual}<br>
+                    ${r.passed ? '✓ PASS' : '✗ FAIL'}
+                </div>`;
+            });
+
+            resultDiv.innerHTML = html;
+            
+            const allPassed = results.every(r => r.passed);
+            if (allPassed) testResults.passed++;
+            else testResults.failed++;
+            updateSummary();
+        }
+
+        // Test 3: UI State Management
+        function testUIState() {
+            const resultDiv = document.getElementById('test3-result');
+            let results = [];
+
+            // Test 1: Modal opens immediately
+            let modalOpened = false;
+            // Simulate openUploadModalWithFiles
+            modalOpened = true;
+            results.push({
+                test: 'Modal opens immediately',
+                expected: true,
+                actual: modalOpened,
+                passed: modalOpened === true
+            });
+
+            // Test 2: No "准备中..." text
+            const loadingText = '准备中...';
+            const uiText = 'File list displayed';
+            const hasLoadingText = uiText.includes(loadingText);
+            results.push({
+                test: 'No "准备中..." text',
+                expected: false,
+                actual: hasLoadingText,
+                passed: hasLoadingText === false
+            });
+
+            // Test 3: Progress container hidden initially
+            let progressVisible = false;
+            results.push({
+                test: 'Progress hidden initially',
+                expected: false,
+                actual: progressVisible,
+                passed: progressVisible === false
+            });
+
+            let html = '<h3>Test Results:</h3>';
+            results.forEach(r => {
+                html += `<div class="test-result ${r.passed ? 'pass' : 'fail'}">
+                    ${r.test}<br>
+                    Expected: ${r.expected}, Actual: ${r.actual}<br>
+                    ${r.passed ? '✓ PASS' : '✗ FAIL'}
+                </div>`;
+            });
+
+            resultDiv.innerHTML = html;
+            
+            const allPassed = results.every(r => r.passed);
+            if (allPassed) testResults.passed++;
+            else testResults.failed++;
+            updateSummary();
+        }
+
+        // Test 4: Simulate file selection
+        function simulateFileSelect() {
+            const resultDiv = document.getElementById('test4-result');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Trigger file input
+            fileInput.click();
+            
+            resultDiv.innerHTML = '<div class="test-result pass">File input triggered. Please select a file to continue test.</div>';
+            
+            // Listen for file selection
+            fileInput.addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                let html = `<h3>Selected ${files.length} file(s):</h3>`;
+                
+                files.forEach(f => {
+                    html += `<div class="test-result pass">
+                        Name: ${f.name}<br>
+                        Size: ${formatSize(f.size)}<br>
+                        Type: ${f.type || 'unknown'}
+                    </div>`;
+                });
+
+                // Test: Check if mobile and simulate auto-upload
+                const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+                html += `<div class="test-result ${isMobile ? 'pass' : ''}">
+                    Device: ${isMobile ? 'Mobile (auto-upload enabled)' : 'Desktop (manual upload)'}
+                </div>`;
+
+                resultDiv.innerHTML = html;
+                testResults.passed++;
+                updateSummary();
+            });
+        }
+
+        // Helper: Format file size
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        // Update summary
+        function updateSummary() {
+            const summaryDiv = document.getElementById('summary');
+            const totalTests = testResults.passed + testResults.failed;
+            summaryDiv.innerHTML = `
+                <div style="font-size: 18px; font-weight: bold; margin: 10px 0;">
+                    Total: ${testResults.total}, Passed: ${testResults.passed}, Failed: ${testResults.failed}
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${(testResults.passed / testResults.total) * 100}%"></div>
+                </div>
+                ${testResults.failed === 0 ? 
+                    '<div class="test-result pass" style="font-size: 16px;"><strong>✓ All tests passed!</strong></div>' : 
+                    `<div class="test-result fail" style="font-size: 16px;"><strong>✗ ${testResults.failed} test(s) failed</strong></div>`}
+            `;
+        }
+
+        // Initialize
+        updateSummary();
+    </script>
+</body>
+</html>

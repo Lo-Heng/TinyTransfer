@@ -16,24 +16,18 @@ struct UploadMeta {
 
 pub struct FileManager {
     pub upload_folder: String,
-    pub share_folder: String,
 }
 
 impl FileManager {
-    pub fn new(upload_folder: String, share_folder: String) -> Self {
-        let fm = Self {
-            upload_folder,
-            share_folder,
-        };
+    pub fn new(upload_folder: String) -> Self {
+        let fm = Self { upload_folder };
         fm.ensure_folders();
         fm
     }
 
     pub fn ensure_folders(&self) {
-        for folder in [&self.upload_folder, &self.share_folder] {
-            if let Err(e) = fs::create_dir_all(folder) {
-                eprintln!("[FileManager] create_dir_all {} failed: {e}", folder);
-            }
+        if let Err(e) = fs::create_dir_all(&self.upload_folder) {
+            eprintln!("[FileManager] create_dir_all {} failed: {e}", self.upload_folder);
         }
     }
 
@@ -79,31 +73,7 @@ impl FileManager {
         self.save_metadata(&meta);
     }
 
-    pub fn list_shared_files(&self) -> Vec<serde_json::Value> {
-        let mut files = Vec::new();
-        let folder = Path::new(&self.share_folder);
-        if let Ok(entries) = fs::read_dir(folder) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if path.is_file() {
-                    if let Ok(meta) = entry.metadata() {
-                        files.push(serde_json::json!({
-                            "name": entry.file_name().to_string_lossy().to_string(),
-                            "size": meta.len(),
-                            "modified": meta.modified().ok()
-                                .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
-                                .map(|d| d.as_secs_f64())
-                                .unwrap_or(0.0),
-                            "source": "shared"
-                        }));
-                    }
-                }
-            }
-        }
-        files
-    }
-
-    pub fn list_uploaded_files(&self) -> Vec<serde_json::Value> {
+    pub fn list_files(&self) -> Vec<serde_json::Value> {
         let mut files = Vec::new();
         let folder = Path::new(&self.upload_folder);
         let upload_meta = self.load_metadata();
@@ -134,23 +104,7 @@ impl FileManager {
         files
     }
 
-    pub fn list_all_files(&self, host_device: &str) -> Vec<serde_json::Value> {
-        let mut files = self.list_shared_files();
-        for f in &mut files {
-            if let Some(obj) = f.as_object_mut() {
-                obj.insert("device".into(), host_device.into());
-            }
-        }
-        files.extend(self.list_uploaded_files());
-        files.sort_by(|a, b| {
-            let ma = a.get("modified").and_then(|v| v.as_f64()).unwrap_or(0.0);
-            let mb = b.get("modified").and_then(|v| v.as_f64()).unwrap_or(0.0);
-            mb.partial_cmp(&ma).unwrap_or(std::cmp::Ordering::Equal)
-        });
-        files
-    }
-
-    fn unique_filepath(&self, filename: &str) -> PathBuf {
+    pub fn unique_filepath(&self, filename: &str) -> PathBuf {
         let safe = secure_filename(filename);
         let folder = Path::new(&self.upload_folder);
         let mut path = folder.join(&safe);
@@ -170,31 +124,10 @@ impl FileManager {
         path
     }
 
-    pub fn save_uploaded_file(&self, filename: &str, data: &[u8], device_type: &str) -> Option<String> {
-        let safe = secure_filename(filename);
-        if safe.starts_with("speed-test") {
-            return Some(safe);
-        }
-        let path = self.unique_filepath(&safe);
-        match fs::File::create(&path) {
-            Ok(mut file) => {
-                if file.write_all(data).is_ok() {
-                    let saved_name = path.file_name()?.to_string_lossy().to_string();
-                    self.save_upload_meta(&saved_name, device_type);
-                    return Some(saved_name);
-                }
-            }
-            Err(e) => eprintln!("[FileManager] save_uploaded_file failed: {e}"),
-        }
-        None
-    }
-
     pub fn find_file_path(&self, filename: &str) -> Option<PathBuf> {
-        for folder in [&self.share_folder, &self.upload_folder] {
-            if let Some(path) = safe_path(folder, filename) {
-                if path.exists() && path.is_file() {
-                    return Some(path);
-                }
+        if let Some(path) = safe_path(&self.upload_folder, filename) {
+            if path.exists() && path.is_file() {
+                return Some(path);
             }
         }
         None

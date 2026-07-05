@@ -1,0 +1,97 @@
+{
+  "project": {
+    "name": "Tiny Transfer 手机端终极版",
+    "operation": "create",
+    "designRead": "file-transfer app / mobile users on iPhone Safari / clean minimal / Apple HIG",
+    "designDials": { "layoutVariance": 3, "motionIntensity": 3, "visualDensity": 3 },
+    "generationTree": {
+      "type": "linear",
+      "nodes": [
+        { "id": "page-qr-connect", "role": "leaf", "status": "planned" },
+        { "id": "page-file-transfer", "role": "leaf", "status": "planned" },
+        { "id": "page-upload-sheet", "role": "leaf", "status": "planned", "derivedFrom": "page-file-transfer" },
+        { "id": "page-file-preview", "role": "leaf", "status": "planned", "derivedFrom": "page-file-transfer" }
+      ]
+    }
+  },
+  "designSource": {
+    "operatingMode": "library-bound",
+    "libraryIdentity": {
+      "name": "Apple",
+      "id": "dl_builtin_apple",
+      "version": 0,
+      "scope": "built-in-global",
+      "path": "f:\\workspace\\Slim_Transfer_2\\.design_library\\Apple",
+      "versionSource": "metadata.json"
+    },
+    "cssPath": "f:\\workspace\\Slim_Transfer_2\\.design_library\\Apple\\css.json"
+  },
+  "pages": [
+    {
+      "nodeId": "page-qr-connect",
+      "title": "扫码连接",
+      "htmlSrc": "pages/qr-connect.html",
+      "pageType": "showcase",
+      "visualNorthStar": "Clean QR code centered, pulsing glow animation, step indicators above, WiFi hint below, Apple HIG minimal style",
+      "continuityAnchors": {
+        "colorSystem": "Apple HIG blue #007AFF primary, #F2F2F7 page bg, #1D1D1F text",
+        "shapeSystem": "iOS rounded corners, 14px cards, 9999px pills",
+        "typographySystem": "SF Pro / Noto Sans SC, 14px base",
+        "componentLanguage": "iOS-style cards, capsule buttons, subtle borders"
+      }
+    },
+    {
+      "nodeId": "page-file-transfer",
+      "title": "文件传输",
+      "htmlSrc": "pages/file-transfer.html",
+      "pageType": "information-dense",
+      "visualNorthStar": "Connected state with compact QR, file grid with type-colored icons, batch bar, FAB, bottom sheet upload trigger",
+      "continuityAnchors": {
+        "colorSystem": "Apple HIG blue #007AFF primary, #F2F2F7 page bg, #1D1D1F text",
+        "shapeSystem": "iOS rounded corners, 14px cards, 9999px pills",
+        "typographySystem": "SF Pro / Noto Sans SC, 14px base",
+        "componentLanguage": "File cards with device tags, grid/list toggle, chip filters"
+      }
+    },
+    {
+      "nodeId": "page-upload-sheet",
+      "title": "上传弹窗",
+      "htmlSrc": "pages/upload-sheet.html",
+      "pageType": "task-driven",
+      "visualNorthStar": "iOS bottom sheet with drag handle, upload options, drop zone, file list with remove",
+      "continuityAnchors": {
+        "colorSystem": "Apple HIG blue #007AFF primary",
+        "shapeSystem": "Top-only rounded corners on sheet, 14px option cards",
+        "componentLanguage": "iOS action sheet style, dashed drop zone"
+      },
+      "derivedFrom": "page-file-transfer"
+    },
+    {
+      "nodeId": "page-file-preview",
+      "title": "文件预览",
+      "htmlSrc": "pages/file-preview.html",
+      "pageType": "showcase",
+      "visualNorthStar": "Full-screen image preview with blur background, close button, file info overlay, download action",
+      "continuityAnchors": {
+        "colorSystem": "Apple HIG blue #007AFF primary",
+        "shapeSystem": "18px rounded preview container",
+        "componentLanguage": "iOS full-screen preview with blur backdrop"
+      },
+      "derivedFrom": "page-file-transfer"
+    }
+  ],
+  "assets": [],
+  "wiringPlan": [
+    { "from": "page-qr-connect", "to": "page-file-transfer", "label": "连接成功" },
+    { "from": "page-file-transfer", "to": "page-upload-sheet", "label": "上传文件", "hideEdge": true },
+    { "from": "page-file-transfer", "to": "page-file-preview", "label": "预览文件", "hideEdge": true },
+    { "from": "page-upload-sheet", "to": "page-file-transfer", "label": "关闭", "hideEdge": true },
+    { "from": "page-file-preview", "to": "page-file-transfer", "label": "返回", "hideEdge": true }
+  ],
+  "hiddenInteractionPlan": [
+    { "domId": "fab-upload", "sourcePage": "page-file-transfer", "targetPage": "page-upload-sheet" },
+    { "domId": "file-card-preview", "sourcePage": "page-file-transfer", "targetPage": "page-file-preview" },
+    { "domId": "sheet-backdrop", "sourcePage": "page-upload-sheet", "targetPage": "page-file-transfer" },
+    { "domId": "preview-close", "sourcePage": "page-file-preview", "targetPage": "page-file-transfer" }
+  ]
+}

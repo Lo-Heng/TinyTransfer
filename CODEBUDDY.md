@@ -17,7 +17,7 @@ iPhone Safari 扫码即用，电脑和手机在同一 WiFi 下直连传输，无
 cd rust/src-tauri
 cargo build --release
 cargo run --release
-# 输出: target/release/slim-transfer.exe
+# 输出: rust/target/release/TinyTransfer.exe
 ```
 
 ## Architecture
@@ -79,33 +79,71 @@ cargo run --release
 
 ## Build & Package
 
+### 一键打包（推荐）
+
+```bash
+# 在项目根目录执行，自动完成：编译 → UPX 压缩 → Tauri 打包 → 收集输出
+build-tauri.bat
+# 输出: output/TinyTransfer.exe + output/TinyTransfer-setup.exe
+```
+
+### 手动步骤
+
 ```bash
 cd rust/src-tauri
 
 # 开发模式
 cargo run
 
-# 发布模式（优化 + 单文件）
+# 1. 编译 release 二进制
 cargo build --release
-# 输出: target/release/tiny-transfer.exe
+# 输出: rust/target/release/TinyTransfer.exe (~4.8 MB)
 
-# 打包安装包（NSIS 安装程序）
-cargo tauri build
-# 或一键脚本：../../build-tauri.bat
-# 输出: output/
+# 2. (可选) UPX 压缩二进制
+..\..\tools\upx\upx.exe --best --lzma "..\..\target\release\TinyTransfer.exe"
+# 压缩后: ~1.6 MB
 
-# release 优化参数 (Cargo.toml [profile.release])
-# codegen-units = 1
-# lto = true
-# opt-level = "z"
-# panic = "abort"
-# strip = true
+# 3. 打包 NSIS 安装程序（使用已编译的二进制，不重新编译）
+npx @tauri-apps/cli build
+# 输出: rust/target/release/bundle/nsis/TinyTransfer-setup.exe
 ```
+
+### 输出文件
+
+| 文件 | 描述 |
+|------|------|
+| `output/TinyTransfer.exe` | 裸可执行文件（已 UPX 压缩）|
+| `output/TinyTransfer-setup.exe` | NSIS 安装包 |
+
+### Release 优化参数 (Cargo.toml [profile.release])
+
+```toml
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "z"
+panic = "abort"
+strip = true
+```
+
+### UPX 压缩
+
+`build-tauri.bat` 会自动检测 `tools/upx/upx.exe` 并执行压缩：
+
+| 阶段 | 大小 |
+|------|------|
+| 编译后（未压缩） | ~4.8 MB |
+| UPX 压缩后 | ~1.6 MB |
+| 压缩率 | ~67% |
+
+**要求**：将 `upx.exe` 放到 `tools/upx/upx.exe`
+- 下载地址：https://github.com/upx/upx/releases
+- 未找到 UPX 时自动跳过压缩步骤
 
 ## Project Directory Structure
 
 ```
-SlimTransfer/
+Tiny Transfer/
 ├── rust/                        # Rust 核心代码
 │   └── src-tauri/             # Tauri 桌面应用 + Axum 服务端
 │       ├── src/

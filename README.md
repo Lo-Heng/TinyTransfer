@@ -1,4 +1,4 @@
-# SlimTransfer - 极速局域网文件传输工具
+# Tiny Transfer - 极速局域网文件传输工具
 
 一个适配苹果手机的轻量级局域网文件传输小工具，无需第三方服务器，同 WiFi 下直连传输。
 
@@ -24,7 +24,7 @@
 ## 项目结构
 
 ```
-SlimTransfer/
+Tiny Transfer/
 ├── rust/               # Rust 核心代码
 │   └── src-tauri/     # Tauri 桌面应用 + Axum 服务端
 │       ├── src/        # Rust 源码
@@ -58,6 +58,60 @@ cargo tauri build
 - ✅ 无自签名 HTTPS，避免证书警告
 - ✅ 响应式设计，适配各种 iOS 设备
 - ✅ 原生表单 enctype="multipart/form-data" 确保 iOS 上传正常
+
+## 构建打包
+
+项目提供两种打包方式，根据需求选择：
+
+### 方式一：Tauri 打包（推荐普通用户）
+
+包含 Tauri 桌面壳，有完整窗口管理、图标 Patching 等特性。
+
+```bash
+# 一键打包（构建 + UPX 压缩，推荐）
+build-tauri.bat
+
+# 或手动执行
+cd rust/src-tauri
+npx @tauri-apps/cli build
+```
+
+输出文件：`output/TinyTransfer.exe`（~4.8 MB，UPX 压缩后 ~1.6 MB）
+
+### 方式二：纯 Rust 优化构建（更小体积）
+
+直接 `cargo build --release` 构建独立 exe，启用 LTO + strip + opt-level=z 优化。
+适合只需要后台服务的场景。
+
+```bash
+# 构建并复制到 output/（需 Node.js 用于嵌入图标）
+build-opt.bat
+
+# 构建 + UPX 压缩
+build-opt.bat upx
+```
+
+输出文件：`output/TinyTransfer.exe`
+
+**大小对比（启用 UPX 后）：**
+
+| 构建方式 | 压缩前 | UPX 压缩后 |
+|----------|---------|-------------|
+| Tauri 打包（`build-tauri.bat`） | ~4.8 MB | ~1.6 MB |
+| 纯 Rust（`build-opt.bat`） | ~4.7 MB | ~1.5 MB |
+
+> UPX 压缩率约 67%，两种构建方式压缩后大小接近。
+> 纯 Rust 构建需要 Node.js（用于 `npx rcedit` 嵌入图标），
+> 若不需要图标可跳过此步骤。
+
+### UPX 压缩
+
+两种打包脚本均支持 UPX 压缩，显著减小 exe 体积。
+
+**要求**：将 `upx.exe` 放到 `tools/upx/upx.exe`
+
+- 下载地址：https://github.com/upx/upx/releases
+- 未找到 UPX 时自动跳过压缩步骤
 
 ## 注意事项
 

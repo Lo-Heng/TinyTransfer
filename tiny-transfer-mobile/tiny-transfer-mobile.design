@@ -1,0 +1,114 @@
+{
+  "data": [
+    {
+      "id": "page-qr-connect",
+      "title": "扫码连接",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1782321000000,
+      "canvasData": {
+        "x": 0,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/qr-connect.html",
+        "interactions": [
+          {
+            "domId": "qr-connect-next",
+            "targetPageId": "page-file-transfer",
+            "transitionLabel": "连接成功"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-file-transfer",
+      "title": "文件传输",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1782321000000,
+      "canvasData": {
+        "x": 420,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/file-transfer.html",
+        "interactions": [
+          {
+            "domId": "fab-upload",
+            "targetPageId": "page-upload-sheet",
+            "hideEdge": true,
+            "transitionLabel": "上传文件"
+          },
+          {
+            "domId": "file-card-preview",
+            "targetPageId": "page-file-preview",
+            "hideEdge": true,
+            "transitionLabel": "预览文件"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-upload-sheet",
+      "title": "上传弹窗",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1782321000000,
+      "canvasData": {
+        "x": 0,
+        "y": 590,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/upload-sheet.html",
+        "interactions": [
+          {
+            "domId": "sheet-backdrop",
+            "targetPageId": "page-file-transfer",
+            "hideEdge": true,
+            "transitionLabel": "关闭"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-file-preview",
+      "title": "文件预览",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1782321000000,
+      "canvasData": {
+        "x": 420,
+        "y": 590,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/file-preview.html",
+        "interactions": [
+          {
+            "domId": "preview-close",
+            "targetPageId": "page-file-transfer",
+            "hideEdge": true,
+            "transitionLabel": "返回"
+          }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "autoLayout": true,
+    "deviceType": "mobile",
+    "projectName": "Tiny Transfer 手机端终极版",
+    "designLibrary": {
+      "name": "Apple",
+      "id": "dl_builtin_apple",
+      "version": 0,
+      "scope": "built-in-global",
+      "path": "f:\\workspace\\Slim_Transfer_2\\.design_library\\Apple",
+      "versionSource": "metadata.json"
+    }
+  }
+}

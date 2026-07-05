@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiny Transfer - 扫码连接</title>
+    <style id="theme-vars">
+{
+  "color": {
+    "brand": {
+      "brand-900": {
+        "hex": "#00275a",
+        "opacity": "1"
+      },
+      "brand-800": {
+        "hex": "#003b82",
+        "opacity": "1"
+      },
+      "brand-700": {
+        "hex": "#004fad",
+        "opacity": "1"
+      },
+      "brand-600": {
+        "hex": "#0064d6",
+        "opacity": "1"
+      },
+      "brand-500": {
+        "hex": "#007aff",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "brand-400": {
+        "hex": "#2e8dff",
+        "opacity": "1"
+      },
+      "brand-300": {
+        "hex": "#66abff",
+        "opacity": "1"
+      },
+      "brand-200": {
+        "hex": "#9fcbff",
+        "opacity": "1"
+      },
+      "brand-100": {
+        "hex": "#cfe5ff",
+        "opacity": "1"
+      },
+      "brand-50": {
+        "hex": "#e8f2ff",
+        "opacity": "1"
+      }
+    },
+    "background": {
+      "background-900": {
+        "hex": "#000000",
+        "opacity": "1"
+      },
+      "background-800": {
+        "hex": "#1c1c1e",
+        "opacity": "1"
+      },
+      "background-700": {
+        "hex": "#3a3a3c",
+        "opacity": "1"
+      },
+      "background-600": {
+        "hex": "#8e8e93",
+        "opacity": "1"
+      },
+      "background-500": {
+        "hex": "#aeaeb2",
+        "opacity": "1"
+      },
+      "background-400": {
+        "hex": "#d1d1d6",
+        "opacity": "1"
+      },
+      "background-300": {
+        "hex": "#e5e5ea",
+        "opacity": "1"
+      },
+      "background-200": {
+        "hex": "#f2f2f7",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "background-100": {
+        "hex": "#f7f7fa",
+        "opacity": "1"
+      },
+      "background-50": {
+        "hex": "#ffffff",
+        "opacity": "1"
+      }
+    },
+    "text": {
+      "text-900": {
+        "hex": "#000000",
+        "opacity": "1"
+      },
+      "text-800": {
+        "hex": "#1d1d1f",
+        "opacity": "1"
+      },
+      "text-700": {
+        "hex": "#3c3c43",
+        "opacity": "1"
+      },
+      "text-600": {
+        "hex": "#48484a",
+        "opacity": "1"
+      },
+      "text-500": {
+        "hex": "#6e6e73",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "text-400": {
+        "hex": "#8e8e93",
+        "opacity": "1"
+      },
+      "text-300": {
+        "hex": "#aeaeb2",
+        "opacity": "1"
+      },
+      "text-200": {
+        "hex": "#c7c7cc",
+        "opacity": "1"
+      },
+      "text-100": {
+        "hex": "#e3e3e8",
+        "opacity": "1"
+      },
+      "text-50": {
+        "hex": "#f5f5f7",
+        "opacity": "1"
+      }
+    },
+    "icon": {
+      "icon-900": {
+        "hex": "#1d1d1f",
+        "opacity": "1"
+      },
+      "icon-800": {
+        "hex": "#2c2c2e",
+        "opacity": "1"
+      },
+      "icon-700": {
+        "hex": "#48484a",
+        "opacity": "1"
+      },
+      "icon-600": {
+        "hex": "#6e6e73",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "icon-500": {
+        "hex": "#8e8e93",
+        "opacity": "1"
+      },
+      "icon-400": {
+        "hex": "#aeaeb2",
+        "opacity": "1"
+      },
+      "icon-300": {
+        "hex": "#c7c7cc",
+        "opacity": "1"
+      },
+      "icon-200": {
+        "hex": "#d1d1d6",
+        "opacity": "1"
+      },
+      "icon-100": {
+        "hex": "#e5e5ea",
+        "opacity": "1"
+      },
+      "icon-50": {
+        "hex": "#f5f5f7",
+        "opacity": "1"
+      }
+    },
+    "state-success": {
+      "state-success": {
+        "hex": "#34c759",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "state-success-dark": {
+        "hex": "#30d158",
+        "opacity": "1"
+      },
+      "state-success-surface": {
+        "hex": "#e9f9ee",
+        "opacity": "1"
+      },
+      "state-success-foreground": {
+        "hex": "#ffffff",
+        "opacity": "1"
+      }
+    },
+    "state-error": {
+      "state-error": {
+        "hex": "#ff3b30",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "state-error-dark": {
+        "hex": "#ff453a",
+        "opacity": "1"
+      },
+      "state-error-surface": {
+        "hex": "#ffecea",
+        "opacity": "1"
+      },
+      "state-error-foreground": {
+        "hex": "#ffffff",
+        "opacity": "1"
+      }
+    },
+    "dark": {
+      "background": {
+        "hex": "#000000",
+        "opacity": "1"
+      },
+      "card": {
+        "hex": "#1c1c1e",
+        "opacity": "1"
+      },
+      "popover": {
+        "hex": "#3a3a3c",
+        "opacity": "1"
+      },
+      "border": {
+        "hex": "#3a3a3c",
+        "opacity": "1"
+      },
+      "primary": {
+        "hex": "#2e8dff",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "muted-foreground": {
+        "hex": "#8e8e93",
+        "opacity": "1"
+      },
+      "foreground": {
+        "hex": "#f5f5f7",
+        "opacity": "1"
+      },
+      "popover-foreground": {
+        "hex": "#f5f5f7",
+        "opacity": "1"
+      },
+      "icon": {
+        "hex": "#f5f5f7",
+        "opacity": "1"
+      },
+      "success-foreground": {
+        "hex": "#ffffff",
+        "opacity": "1"
+      }
+    },
+    "sidebar": {
+      "sidebar-foreground": {
+        "hex": "#1d1d1f",
+        "opacity": "1"
+      },
+      "sidebar-accent-foreground": {
+        "hex": "#1d1d1f",
+        "opacity": "1"
+      },
+      "sidebar-primary": {
+        "hex": "#007aff",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "sidebar-ring": {
+        "hex": "#007aff",
+        "opacity": "1"
+      },
+      "sidebar-accent": {
+        "hex": "#e5e5ea",
+        "opacity": "1"
+      },
+      "sidebar-border": {
+        "hex": "#e5e5ea",
+        "opacity": "1"
+      },
+      "sidebar": {
+        "hex": "#f2f2f7",
+        "opacity": "1"
+      },
+      "sidebar-primary-foreground": {
+        "hex": "#ffffff",
+        "opacity": "1"
+      }
+    },
+    "chart": {
+      "chart-4": {
+        "hex": "#5e5ce6",
+        "opacity": "1"
+      },
+      "chart-5": {
+        "hex": "#bf5af2",
+        "opacity": "1"
+      },
+      "chart-2": {
+        "hex": "#2e8dff",
+        "opacity": "1"
+      },
+      "chart-3": {
+        "hex": "#ff9f0a",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "chart-1": {
+        "hex": "#30d158",
+        "opacity": "1"
+      }
+    },
+    "state-warning": {
+      "state-warning": {
+        "hex": "#ff9f0a",
+        "opacity": "1",
+        "isPrimary": true
+      },
+      "state-warning-dark": {
+        "hex": "#ffb340",
+        "opacity": "1"
+      },
+      "state-warning-surface": {
+        "hex": "#fff6e5",
+        "opacity": "1"
+      },
+      "state-warning-foreground": {
+        "hex": "#ffffff",
+        "opacity": "1"
+      }
+    }
+  },
+  "font": {
+    "family": {
+      "font-sans": "DM Sans, ui-sans-serif, sans-serif, system-ui",
+      "font-serif": "DM Sans, ui-sans-serif, sans-serif, system-ui",
+      "font-mono": "JetBrains Mono, monospace"
+    },
+    "size": {
+      "text-xs": {
+        "value": "11px",
+        "isPrimary": false
+      },
+      "text-sm": {
+        "value": "13px",
+        "isPrimary": false
+      },
+      "text-base": {
+        "value": "14px",
+        "isPrimary": true
+      },
+      "text-lg": {
+        "value": "16px",
+        "isPrimary": false
+      },
+      "text-xl": {
+        "value": "18px",
+        "isPrimary": false
+      },
+      "text-2xl": {
+        "value": "22px",
+        "isPrimary": false
+      },
+      "text-3xl": {
+        "value": "28px",
+        "isPrimary": false
+      },
+      "text-4xl": {
+        "value": "34px",
+        "isPrimary": false
+      }
+    },
+    "weight": {
+      "font-light": {
+        "value": "300",
+        "isPrimary": false
+      },
+      "font-regular": {
+        "value": "400",
+        "isPrimary": true
+      },
+      "font-medium": {
+        "value": "500",
+        "isPrimary": false
+      },
+      "font-semibold": {
+        "value": "600",
+        "isPrimary": false
+      },
+      "font-bold": {
+        "value": "700",
+        "isPrimary": false
+      }
+    },
+    "lineHeight": {
+      "leading-tight": {
+        "value": "1.25",
+        "isPrimary": false
+      },
+      "leading-normal": {
+        "value": "1.5",
+        "isPrimary": true
+      },
+      "leading-relaxed": {
+        "value": "1.65",
+        "isPrimary": false
+      }
+    }
+  },
+  "shadow": {
+    "shadow-2xs": {
+      "xOffset": "0px",
+      "yOffset": "1px",
+      "blur": "2px",
+      "spread": "-1px",
+      "color": {
+        "hex": "#000000",
+        "opacity": "0.04"
+      }
+    },
+    "shadow-xs": {
+      "xOffset": "0px",
+      "yOffset": "1px",
+      "blur": "2px",
+      "spread": "0px",
+      "color": {
+        "hex": "#000000",
+        "opacity": "0.04"
+      }
+    },
+    "shadow-sm": {
+      "layers": [
+        {
+          "xOffset": "0px",
+          "yOffset": "1px",
+          "blur": "2px",
+          "spread": "0px",
+          "color": {
+            "hex": "#000000",
+            "opacity": "0.05"
+          }
+        },
+        {
+          "xOffset": "0px",
+          "yOffset": "1px",
+          "blur": "3px",
+          "spread": "-1px",
+          "color": {
+            "hex": "#000000",
+            "opacity": "0.05"
+          }
+        }
+      ]
+    },
+    "shadow": {
+      "layers": [
+        {
+          "xOffset": "0px",
+          "yOffset": "2px",
+          "blur": "4px",
+          "spread": "-1px",
+          "color": {
+            "hex": "#000000",
+            "opacity": "0.06"
+          }
+        },
+        {
+          "xOffset": "0px",
+          "yOffset": "1px",
+          "blur": "2px",
+          "spread": "-1px",
+          "color": {
+            "hex": "#000000",
+            "opacity": "0.05"
+          }
+        }
+      ]
+    },
+    "shadow-md": {
+      "layers": [
+        {
+          "xOffset": "0px",
+          "yOffset": "4px",
+          "blur": "8px",
+          "spread": "-2px",
+          "color": {
+            "hex": "#000000",
+            "opacity": "0.06"
+          }
+        },
+        {
+          "xOffset": "0px",
+          "yOffset": "2px",
+          "blur": "4px",
+          "spread": "-2px",
+          "color": {
+            "hex": "#000000",
+            "opacity": "0.05"
+          }
+        }
+      ]
+    },
+    "shadow-lg": {
+      "layers": [
+        {
+          "xOffset": "0px",
+          "yOffset": "8px",
+          "blur": "24px",
+          "spread": "-8px",
+          "color": {
+            "hex": "#000000",
+            "opacity": "0.08"
+          }
+        },
+        {
+          "xOffset": "0px",
+          "yOffset": "4px",
+          "blur": "8px",
+          "spread": "-4px",
+          "color": {
+            "hex": "#000000",
+            "opacity": "0.05"
+          }
+        }
+      ]
+    },
+    "shadow-xl": {
+      "layers": [
+        {
+          "xOffset": "0px",
+          "yOffset": "16px",
+          "blur": "40px",
+          "spread": "-10px",
+          "color": {
+            "hex": "#000000",
+            "opacity": "0.10"
+          }
+        },
+        {
+          "xOffset": "0px",
+          "yOffset": "8px",
+          "blur": "16px",
+          "spread": "-8px",
+          "color": {
+            "hex": "#000000",
+            "opacity": "0.06"
+          }
+        }
+      ]
+    },
+    "shadow-2xl": {
+      "xOffset": "0px",
+      "yOffset": "24px",
+      "blur": "64px",
+      "spread": "-12px",
+      "color": {
+        "hex": "#000000",
+        "opacity": "0.12"
+      }
+    }
+  },
+  "radius": {
+    "radius-xs": {
+      "value": "4px",
+      "isPrimary": false
+    },
+    "radius-sm": {
+      "value": "6px",
+      "isPrimary": false
+    },
+    "radius-md": {
+      "value": "10px",
+      "isPrimary": false
+    },
+    "radius-lg": {
+      "value": "14px",
+      "isPrimary": false
+    },
+    "radius-xl": {
+      "value": "18px",
+      "isPrimary": false
+    },
+    "radius-2xl": {
+      "value": "22px",
+      "isPrimary": false
+    },
+    "radius-full": {
+      "value": "9999px",
+      "isPrimary": false
+    }
+  },
+  "spacing": {
+    "spacing-1": {
+      "value": "4px",
+      "isPrimary": false
+    },
+    "spacing-2": {
+      "value": "8px",
+      "isPrimary": false
+    },
+    "spacing-3": {
+      "value": "12px",
+      "isPrimary": false
+    },
+    "spacing-4": {
+      "value": "16px",
+      "isPrimary": true
+    },
+    "spacing-5": {
+      "value": "20px",
+      "isPrimary": false
+    },
+    "spacing-6": {
+      "value": "24px",
+      "isPrimary": false
+    },
+    "spacing-8": {
+      "value": "32px",
+      "isPrimary": false
+    },
+    "spacing-10": {
+      "value": "40px",
+      "isPrimary": false
+    },
+    "spacing-12": {
+      "value": "48px",
+      "isPrimary": false
+    },
+    "spacing-16": {
+      "value": "64px",
+      "isPrimary": false
+    },
+    "spacing-20": {
+      "value": "80px",
+      "isPrimary": false
+    }
+  },
+  "size": {}
+}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  
+  @layer base {
+    body { background: var(--color-background-background-50); color: var(--color-text-text-800); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="top-bar__brand">
+      <div class="top-bar__logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 2L4.09 12.68a1 1 0 0 0 .77 1.63H11l-1 8L18.91 11.32a1 1 0 0 0-.77-1.63H13l1-8z"/>
+        </svg>
+      </div>
+      <span class="top-bar__title">Tiny Transfer</span>
+    </div>
+    <button class="top-bar__theme-toggle" type="button" aria-label="切换深色模式" id="themeToggle">
+      <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Step Indicators -->
+    <nav class="steps" aria-label="连接步骤">
+      <div class="step step--active">
+        <div class="step__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+          </svg>
+        </div>
+        <span class="step__label">扫码连接</span>
+      </div>
+      <div class="steps__connector" aria-hidden="true"></div>
+      <div class="step step--pending">
+        <div class="step__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="17 8 12 3 7 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="step__label">拖拽传输</span>
+      </div>
+    </nav>
+
+    <!-- QR Code -->
+    <section class="qr-section">
+      <div class="qr-wrapper">
+        <div class="qr-code" id="qrCode" data-dom-id="qr-connect-next" role="button" tabindex="0" aria-label="点击放大二维码">
+          <svg viewBox="0 0 152 152" xmlns="http://www.w3.org/2000/svg" id="qrSvg">
+            <!-- Finder pattern top-left -->
+            <rect x="8" y="8" width="40" height="40" rx="4" fill="var(--color-text-primary)"/>
+            <rect x="14" y="14" width="28" height="28" rx="2" fill="var(--color-surface)"/>
+            <rect x="20" y="20" width="16" height="16" rx="2" fill="var(--color-text-primary)"/>
+
+            <!-- Finder pattern top-right -->
+            <rect x="104" y="8" width="40" height="40" rx="4" fill="var(--color-text-primary)"/>
+            <rect x="110" y="14" width="28" height="28" rx="2" fill="var(--color-surface)"/>
+            <rect x="116" y="20" width="16" height="16" rx="2" fill="var(--color-text-primary)"/>
+
+            <!-- Finder pattern bottom-left -->
+            <rect x="8" y="104" width="40" height="40" rx="4" fill="var(--color-text-primary)"/>
+            <rect x="14" y="110" width="28" height="28" rx="2" fill="var(--color-surface)"/>
+            <rect x="20" y="116" width="16" height="16" rx="2" fill="var(--color-text-primary)"/>
+
+            <!-- Alignment pattern -->
+            <rect x="108" y="108" width="24" height="24" rx="3" fill="var(--color-text-primary)"/>
+            <rect x="113" y="113" width="14" height="14" rx="2" fill="var(--color-surface)"/>
+            <rect x="117" y="117" width="6" height="6" rx="1" fill="var(--color-text-primary)"/>
+
+            <!-- Timing patterns -->
+            <rect x="56" y="8" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="64" y="8" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="72" y="8" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="80" y="8" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="88" y="8" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="96" y="8" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <rect x="8" y="56" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="8" y="64" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="8" y="72" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="8" y="80" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="8" y="88" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="8" y="96" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <!-- Data modules row 1 -->
+            <rect x="56" y="20" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="64" y="20" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="72" y="28" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="80" y="20" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="88" y="28" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="96" y="20" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <!-- Data modules row 2 -->
+            <rect x="56" y="36" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="64" y="44" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="72" y="36" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="80" y="44" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="88" y="36" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="96" y="44" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <!-- Data modules row 3 -->
+            <rect x="20" y="56" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="28" y="64" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="36" y="56" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="44" y="72" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <rect x="56" y="56" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="64" y="64" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="72" y="56" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="80" y="72" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="88" y="56" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="96" y="64" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <rect x="56" y="72" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="64" y="80" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="72" y="88" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="80" y="80" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="88" y="72" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="96" y="88" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <rect x="56" y="96" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="64" y="88" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="72" y="96" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="80" y="96" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="88" y="96" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="96" y="80" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <!-- Data modules row 4 -->
+            <rect x="20" y="88" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="28" y="80" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="36" y="96" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="44" y="88" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <!-- Data modules row 5 -->
+            <rect x="56" y="108" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="64" y="116" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="72" y="108" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="80" y="120" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="88" y="108" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="96" y="120" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <!-- Data modules row 6 -->
+            <rect x="56" y="128" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="64" y="136" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="72" y="128" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="80" y="136" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="88" y="128" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="96" y="136" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <!-- Data modules row 7 -->
+            <rect x="56" y="140" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="64" y="140" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="72" y="140" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="80" y="140" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="88" y="140" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="96" y="140" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <!-- Bottom right area -->
+            <rect x="136" y="56" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="136" y="64" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="136" y="72" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="136" y="80" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="136" y="88" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="136" y="96" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <rect x="140" y="136" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="140" y="128" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="140" y="120" width="4" height="4" fill="var(--color-text-primary)"/>
+
+            <rect x="128" y="140" width="4" height="4" fill="var(--color-text-primary)"/>
+            <rect x="120" y="140" width="4" height="4" fill="var(--color-text-primary)"/>
+          </svg>
+        </div>
+        <!-- Connected badge -->
+        <div class="qr-badge" id="qrBadge" aria-label="已连接">
+          <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="2.5 6 5 8.5 9.5 3.5"/>
+          </svg>
+        </div>
+      </div>
+      <p class="qr-hint">点击二维码放大</p>
+    </section>
+
+    <!-- WiFi Hint -->
+    <div class="wifi-hint">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M5 12.55a11 11 0 0 1 14.08 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M1.42 9a16 16 0 0 1 21.16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12" cy="20" r="1" fill="currentColor"/>
+      </svg>
+      <span class="wifi-hint__text">确保手机和电脑在同一 WiFi 下</span>
+    </div>
+
+    <!-- URL Row -->
+    <div class="url-row" id="urlRow">
+      <span class="url-row__text" id="urlText">http://192.168.1.100:5000</span>
+      <button class="url-row__copy" type="button" aria-label="复制地址" id="copyBtn">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- QR Modal -->
+  <div class="qr-modal" id="qrModal" role="dialog" aria-modal="true" aria-label="放大二维码">
+    <div class="qr-modal__content">
+      <div class="qr-modal__qr" id="qrModalQr">
+        <!-- Cloned QR SVG will be inserted here -->
+      </div>
+      <button class="qr-modal__close" type="button" aria-label="关闭" id="qrModalClose">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // === Theme Toggle ===
+      const html = document.documentElement;
+      const themeToggle = document.getElementById('themeToggle');
+
+      function setTheme(dark) {
+        if (dark) {
+          html.classList.add('dark');
+        } else {
+          html.classList.remove('dark');
+        }
+        try {
+          localStorage.setItem('theme', dark ? 'dark' : 'light');
+        } catch (e) { /* ignore */ }
+      }
+
+      // Init theme
+      try {
+        var saved = localStorage.getItem('theme');
+        if (saved === 'dark') {
+          setTheme(true);
+        } else if (saved === 'light') {
+          setTheme(false);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          setTheme(true);
+        }
+      } catch (e) { /* ignore */ }
+
+      themeToggle.addEventListener('click', function () {
+        setTheme(!html.classList.contains('dark'));
+      });
+
+      // === QR Code Modal ===
+      var qrCode = document.getElementById('qrCode');
+      var qrModal = document.getElementById('qrModal');
+      var qrModalQr = document.getElementById('qrModalQr');
+      var qrModalClose = document.getElementById('qrModalClose');
+      var qrSvg = document.getElementById('qrSvg');
+
+      function openModal() {
+        qrModalQr.innerHTML = '';
+        var clone = qrSvg.cloneNode(true);
+        clone.removeAttribute('id');
+        qrModalQr.appendChild(clone);
+        qrModal.classList.add('qr-modal--visible');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal() {
+        qrModal.classList.remove('qr-modal--visible');
+        document.body.style.overflow = '';
+      }
+
+      qrCode.addEventListener('click', openModal);
+      qrCode.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openModal();
+        }
+      });
+
+      qrModalClose.addEventListener('click', closeModal);
+      qrModal.addEventListener('click', function (e) {
+        if (e.target === qrModal) {
+          closeModal();
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && qrModal.classList.contains('qr-modal--visible')) {
+          closeModal();
+        }
+      });
+
+      // === Copy URL ===
+      var copyBtn = document.getElementById('copyBtn');
+      var urlText = document.getElementById('urlText');
+      var toast = document.getElementById('toast');
+      var toastTimer = null;
+
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add('toast--visible');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          toast.classList.remove('toast--visible');
+        }, 2000);
+      }
+
+      copyBtn.addEventListener('click', function () {
+        var url = urlText.textContent;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function () {
+            showToast('已复制到剪贴板');
+          }).catch(function () {
+            fallbackCopy(url);
+          });
+        } else {
+          fallbackCopy(url);
+        }
+      });
+
+      function fallbackCopy(text) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast('已复制到剪贴板');
+        } catch (e) {
+          showToast('复制失败，请手动复制');
+        }
+        document.body.removeChild(ta);
+      }
+
+      // === Connected Badge Demo (auto-show after 3s for demo) ===
+      // In production, this would be triggered by SSE events
+      // var qrBadge = document.getElementById('qrBadge');
+      // setTimeout(function () {
+      //   qrBadge.classList.add('qr-badge--visible');
+      // }, 3000);
+
+    })();
+  </script>
+
+    <style>
+    /* ============================================
+       CSS Custom Properties
+       ============================================ */
+    :root {
+      /* Colors */
+      --color-primary: var(--color-brand-brand-500);
+      --color-primary-rgb: 0, 122, 255;
+      --color-bg: var(--color-background-background-200);
+      --color-surface: var(--color-background-background-50);
+      --color-text-primary: var(--color-text-text-800);
+      --color-text-secondary: var(--color-text-text-500);
+      --color-text-tertiary: var(--color-text-text-400);
+      --color-success: var(--color-state-success-state-success);
+      --color-success-rgb: 52, 199, 89;
+      --color-border-subtle: rgba(0, 0, 0, 0.06);
+      --color-bg-hover: rgba(0, 0, 0, 0.04);
+      --color-overlay: rgba(0, 0, 0, 0.4);
+
+      /* Radius */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+      --radius-2xl: 22px;
+      --radius-full: 9999px;
+
+      /* Shadows */
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      /* Typography */
+      --font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "SF Mono", SFMono-Regular, ui-monospace, "Cascadia Code", "Segoe UI Mono", Menlo, Monaco, Consolas, monospace;
+
+      /* Spacing */
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* ============================================
+       Dark Mode
+       ============================================ */
+    html.dark {
+      --color-bg: var(--color-dark-background);
+      --color-surface: var(--color-dark-card);
+      --color-text-primary: var(--color-dark-foreground);
+      --color-text-secondary: var(--color-dark-muted-foreground);
+      --color-text-tertiary: var(--color-dark-border);
+      --color-border-subtle: rgba(255, 255, 255, 0.08);
+      --color-bg-hover: rgba(255, 255, 255, 0.06);
+      --color-overlay: rgba(0, 0, 0, 0.6);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ============================================
+       Reset & Base
+       ============================================ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--color-bg);
+      color: var(--color-text-primary);
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ============================================
+       Animations
+       ============================================ */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes qrPulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0.25);
+      }
+      50% {
+        box-shadow: 0 0 0 12px rgba(var(--color-primary-rgb), 0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ============================================
+       Top Bar
+       ============================================ */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background-color: var(--color-bg);
+      border-bottom: 1px solid var(--color-border-subtle);
+      animation: fadeIn 0.4s var(--ease-out) both;
+    }
+
+    .top-bar__brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-bar__logo {
+      width: 22px;
+      height: 22px;
+      background-color: var(--color-primary);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .top-bar__logo svg {
+      width: 13px;
+      height: 13px;
+      fill: var(--color-background-background-50);
+    }
+
+    .top-bar__title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--color-text-primary);
+    }
+
+    .top-bar__theme-toggle {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      border-radius: var(--radius-full);
+      transition: background-color 0.2s ease;
+    }
+
+    .top-bar__theme-toggle:active {
+      transform: scale(0.97);
+      background-color: var(--color-bg-hover);
+    }
+
+    .top-bar__theme-toggle svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .top-bar__theme-toggle .icon-moon {
+      display: none;
+    }
+
+    html.dark .top-bar__theme-toggle .icon-sun {
+      display: none;
+    }
+
+    html.dark .top-bar__theme-toggle .icon-moon {
+      display: block;
+    }
+
+    /* ============================================
+       Main Content
+       ============================================ */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 24px 40px;
+    }
+
+    /* ============================================
+       Step Indicators
+       ============================================ */
+    .steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      animation: fadeInUp 0.5s var(--ease-out) 0.08s both;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step__icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s var(--ease-out);
+    }
+
+    .step--active .step__icon {
+      background-color: rgba(var(--color-primary-rgb), 0.12);
+      color: var(--color-primary);
+    }
+
+    .step--pending .step__icon {
+      background-color: var(--color-bg-hover);
+      color: var(--color-text-tertiary);
+      opacity: 0.28;
+    }
+
+    .step__icon svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .step__label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: all 0.3s var(--ease-out);
+    }
+
+    .step--active .step__label {
+      color: var(--color-primary);
+    }
+
+    .step--pending .step__label {
+      color: var(--color-text-tertiary);
+      opacity: 0.28;
+    }
+
+    .steps__connector {
+      width: 32px;
+      height: 1px;
+      background-color: var(--color-border-subtle);
+      margin: 0 8px;
+      margin-bottom: 20px;
+      align-self: flex-start;
+      margin-top: 17px;
+    }
+
+    /* ============================================
+       QR Code Area
+       ============================================ */
+    .qr-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 32px;
+      animation: fadeInUp 0.5s var(--ease-out) 0.16s both;
+    }
+
+    .qr-wrapper {
+      position: relative;
+      display: inline-flex;
+    }
+
+    .qr-code {
+      width: 180px;
+      height: 180px;
+      background-color: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      box-shadow: var(--shadow-md);
+      animation: qrPulse 2.4s ease-in-out infinite;
+      cursor: pointer;
+      transition: transform 0.2s var(--spring);
+    }
+
+    .qr-code:active {
+      transform: scale(0.97);
+    }
+
+    .qr-code svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .qr-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 22px;
+      height: 22px;
+      background-color: var(--color-success);
+      border-radius: var(--radius-full);
+      border: 2.5px solid var(--color-bg);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: scaleIn 0.35s var(--spring) both;
+      z-index: 2;
+    }
+
+    .qr-badge--visible {
+      display: flex;
+    }
+
+    .qr-badge svg {
+      width: 11px;
+      height: 11px;
+      fill: none;
+      stroke: var(--color-background-background-50);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .qr-hint {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--color-text-tertiary);
+      opacity: 0.7;
+      text-align: center;
+    }
+
+    /* ============================================
+       WiFi Hint
+       ============================================ */
+    .wifi-hint {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 24px;
+      animation: fadeInUp 0.5s var(--ease-out) 0.24s both;
+    }
+
+    .wifi-hint svg {
+      width: 14px;
+      height: 14px;
+      fill: var(--color-text-tertiary);
+      flex-shrink: 0;
+    }
+
+    .wifi-hint__text {
+      font-size: 12px;
+      color: var(--color-text-tertiary);
+    }
+
+    /* ============================================
+       URL Row
+       ============================================ */
+    .url-row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 320px;
+      margin-top: 16px;
+      background-color: var(--color-bg-hover);
+      border-radius: var(--radius-full);
+      padding: 0 4px 0 16px;
+      min-height: 44px;
+      animation: fadeInUp 0.5s var(--ease-out) 0.32s both;
+      transition: background-color 0.2s ease;
+    }
+
+    .url-row:active {
+      background-color: var(--color-border-subtle);
+    }
+
+    .url-row__text {
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 44px;
+      user-select: all;
+    }
+
+    .url-row__copy {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-primary);
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+      transition: background-color 0.2s ease;
+    }
+
+    .url-row__copy:active {
+      transform: scale(0.97);
+      background-color: var(--color-bg-hover);
+    }
+
+    .url-row__copy svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ============================================
+       QR Modal (fullscreen overlay)
+       ============================================ */
+    .qr-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background-color: var(--color-overlay);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s var(--ease-out);
+    }
+
+    .qr-modal--visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .qr-modal__content {
+      background-color: var(--color-surface);
+      border-radius: var(--radius-2xl);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      transform: scale(0.9);
+      transition: transform 0.35s var(--spring);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+    }
+
+    .qr-modal--visible .qr-modal__content {
+      transform: scale(1);
+    }
+
+    .qr-modal__qr {
+      width: 240px;
+      height: 240px;
+      background-color: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .qr-modal__qr svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .qr-modal__close {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--color-bg-hover);
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      border-radius: var(--radius-full);
+      transition: background-color 0.2s ease;
+    }
+
+    .qr-modal__close:active {
+      transform: scale(0.97);
+      background-color: var(--color-border-subtle);
+    }
+
+    .qr-modal__close svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    /* ============================================
+       Toast
+       ============================================ */
+    .toast {
+      position: fixed;
+      bottom: calc(24px + var(--safe-bottom));
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background-color: var(--color-text-primary);
+      color: var(--color-bg);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s var(--ease-out);
+      z-index: 300;
+      white-space: nowrap;
+    }
+
+    .toast--visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</body>
+</html>
