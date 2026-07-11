@@ -80,7 +80,7 @@ Rust + Tauri v2 桌面应用，内嵌 Axum HTTP 服务器。双击 exe 弹出一
 ## Project Structure
 
 ```
-Tiny Transfer/
+Slim_Transfer_2/
 ├── rust/                        # Rust 核心代码
 │   ├── Cargo.toml              # Workspace 配置（release 优化：LTO + strip + opt-z）
 │   └── src-tauri/              # Tauri 桌面应用 + Axum 服务端
@@ -96,21 +96,19 @@ Tiny Transfer/
 │       │   ├── broker.rs      # SSE 广播
 │       │   └── utils.rs       # 工具函数
 │       ├── dist/               # 前端静态文件
-│       │   ├── index.html      # 主页面（单文件，3126 行）
+│       │   ├── index.html      # 主页面（单文件，内联 CSS + JS）
 │       │   └── static/         # 静态资源（qrcode.min.js）
 │       ├── icons/              # 应用图标（闪电图标，多尺寸 PNG + ICO）
 │       │   └── icon.ico        # Windows exe 图标（6 尺寸：16/32/48/64/128/256）
 │       ├── capabilities/      # Tauri v2 权限配置
+│       ├── permissions/       # Tauri v2 自定义命令权限
+│       ├── resources/         # 运行时依赖（WebView2Loader.dll）
 │       ├── Cargo.toml          # Rust 项目配置 + 依赖
 │       ├── build.rs            # Tauri build script
-│       └── tauri.conf.json     # Tauri 配置（NSIS 安装包）
-├── share/                      # 默认共享文件夹（自动创建）
-├── uploads/                    # 默认上传文件夹（自动创建）
-├── icon.svg                    # 闪电图标源文件（SVG）
+│       └── tauri.conf.json     # Tauri 配置（targets: app，便携 exe）
 ├── build-tauri.bat             # 一键打包脚本
-├── README.md                   # 项目说明
 ├── CLAUDE.md                   # 本文件（Claude Code 上下文）
-└── CODEBUDDY.md                # WorkBuddy/CodeBuddy 上下文
+└── LICENSE                     # 开源协议
 ```
 
 ## Build & Package
@@ -177,7 +175,6 @@ Release 优化配置（`rust/Cargo.toml`）：
 - 文件名处理需注意中文字符编码
 - Rust 版本使用 `include_dir` 将静态资源编译进二进制，便于单文件分发
 - 开发时可直接访问 `rust/src-tauri/dist/` 下的前端文件进行调试
-- Tauri v2 桌面壳，单一实例插件（`tauri_plugin_single_instance`）
 - SSE 实时通信：通过 `broker.rs` SSEBroker 广播设备列表变化
 - 认证机制：可选密码保护，认证后返回 token（`security.rs`）
 - 优雅关闭：Tauri `RunEvent::Exit` 时发送 shutdown 信号给 HTTP Server

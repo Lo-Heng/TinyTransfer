@@ -27,14 +27,7 @@ nul
 *.swp
 *.swo
 
-# WorkBuddy
-.workbuddy/
-
 # Build logs / temp files
-build-*.txt
-build-*.ps1
-copy-exe.ps1
-tmp_*.py
 *.bak
 
 # Logs

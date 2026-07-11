@@ -4013,41 +4013,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
 
 [[package]]
-name = "slim-transfer"
-version = "0.1.0"
-dependencies = [
- "axum",
- "chrono",
- "dashmap",
- "fs2",
- "futures",
- "image",
- "include_dir",
- "local-ip-address",
- "mime_guess",
- "open",
- "rand 0.8.6",
- "raw-window-handle",
- "serde",
- "serde_json",
- "subtle",
- "tauri",
- "tauri-build",
- "tauri-plugin-dialog",
- "tauri-plugin-fs",
- "tauri-plugin-opener",
- "tauri-plugin-single-instance",
- "tokio",
- "tokio-stream",
- "tower",
- "tower-http",
- "url",
- "uuid",
- "windows-sys 0.59.0",
- "zip",
-]
-
-[[package]]
 name = "smallvec"
 version = "1.15.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4694,6 +4659,41 @@ checksum = "71c652a3727a9cbb9a02f707f530b618ce00d0ccd762009c8c23bd191df3c17d"
 dependencies = [
  "num-conv",
  "time-core",
+]
+
+[[package]]
+name = "tiny-transfer"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "chrono",
+ "dashmap",
+ "fs2",
+ "futures",
+ "image",
+ "include_dir",
+ "local-ip-address",
+ "mime_guess",
+ "open",
+ "rand 0.8.6",
+ "raw-window-handle",
+ "serde",
+ "serde_json",
+ "subtle",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-fs",
+ "tauri-plugin-opener",
+ "tauri-plugin-single-instance",
+ "tokio",
+ "tokio-stream",
+ "tower",
+ "tower-http",
+ "url",
+ "uuid",
+ "windows-sys 0.59.0",
+ "zip",
 ]
 
 [[package]]
