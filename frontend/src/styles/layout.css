@@ -1,0 +1,446 @@
+/* from index.html lines 820-1275 */
+        /* ============================================================
+           LAYOUT
+           ============================================================ */
+        .page {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 0 var(--s-4);
+            padding-bottom: var(--s-6);
+            position: relative;
+            z-index: 1;
+        }
+        @media (min-width: 640px) {
+            .page { padding: 0 var(--s-8); padding-bottom: var(--s-6); }
+        }
+        @media (min-width: 1024px) {
+            .page { padding: 0 var(--s-12); padding-bottom: var(--s-6); }
+        }
+
+        .section { margin-bottom: var(--s-5); }
+        .section:last-child { margin-bottom: 0; }
+        @media (min-width: 640px) {
+            .section { margin-bottom: var(--s-6); }
+        }
+
+        /* ============================================================
+           TOP BAR — minimal
+           ============================================================ */
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px var(--s-4);
+            position: sticky; top: 0; z-index: var(--z-topbar);
+            background: rgba(255, 252, 249, 0.72);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 0.5px solid var(--border-subtle);
+        }
+        html.dark .topbar {
+            background: rgba(18, 16, 14, 0.72);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 0.5px solid var(--border-subtle);
+        }
+        @media (min-width: 640px) {
+            .topbar { padding: 16px var(--s-8); }
+        }
+        .topbar-brand {
+            display: flex; align-items: center; gap: 12px;
+            text-decoration: none;
+            user-select: none;
+        }
+        .topbar-brand-text {
+            display: flex; flex-direction: column;
+            line-height: 1.25;
+            gap: 1px;
+        }
+        .topbar-brand-name {
+            font-size: var(--text-base); font-weight: 600;
+            letter-spacing: -0.02em; color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .topbar-brand-slogan {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            opacity: 0.8;
+        }
+        .topbar-brand-logo {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            transition: transform var(--dur-hover) var(--ease-spring);
+        }
+        .topbar-brand-logo img {
+            width: 100%; height: 100%;
+            display: block;
+        }
+        .topbar-brand:hover .topbar-brand-logo {
+            transform: scale(1.06) rotate(-4deg);
+        }
+        .topbar-actions {
+            display: flex; align-items: center; gap: var(--s-1);
+        }
+        .topbar-btn {
+            width: 36px; height: 36px; border-radius: var(--r-md);
+            display: flex; align-items: center; justify-content: center;
+            border: 0.5px solid transparent;
+            background: transparent; color: var(--text-secondary);
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: background var(--dur-fast) var(--ease-out),
+                        color var(--dur-fast) var(--ease-out),
+                        transform var(--dur-fast) var(--ease-out),
+                        border-color var(--dur-fast) var(--ease-out);
+            font-size: 18px;
+        }
+        .topbar-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-subtle);
+        }
+        .topbar-btn:active {
+            background: var(--bg-pressed);
+            transform: scale(0.94);
+            transition-duration: 80ms;
+        }
+        /* Refresh button loading animation */
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .topbar-btn.loading svg {
+            animation: rotate 1s linear infinite;
+        }
+
+        /* Connection indicator — minimal */
+        .conn-indicator {
+            display: flex; align-items: center; gap: 8px;
+            font-size: var(--text-sm); color: var(--text-secondary);
+            cursor: pointer; padding: 4px 10px; border-radius: var(--r-full);
+            transition: background var(--dur-hover) var(--ease-out),
+                        transform var(--dur-hover) var(--ease-out);
+            user-select: none;
+        }
+        .conn-indicator:hover { background: var(--bg-hover); }
+        .conn-indicator:active { background: var(--bg-pressed); }
+        .conn-indicator.online { color: var(--text-secondary); }
+        .conn-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--text-tertiary);
+            flex-shrink: 0;
+            transition: background var(--dur-normal) var(--ease-out);
+        }
+        .conn-dot.online { background: var(--accent); }
+        .conn-device-name {
+            font-weight: 500;
+            color: inherit;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Connection banner — minimal */
+        .conn-banner {
+            position: fixed; top: 56px; left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.88);
+            color: var(--text-primary);
+            padding: 8px 18px; border-radius: 24px;
+            font-size: var(--text-sm); font-weight: 500;
+            border: 0.5px solid var(--border-subtle);
+            box-shadow: var(--shadow-lg);
+            z-index: var(--z-banner);
+            white-space: nowrap;
+            display: flex; align-items: center; gap: 8px;
+            pointer-events: none;
+        }
+        html.dark .conn-banner { background: rgba(44,44,44,0.88); border-color: rgba(255,255,255,0.08); }
+        @media (min-width: 640px) { .conn-banner { top: 62px; } }
+        .banner-enter-active, .banner-leave-active {
+            transition: transform 0.4s var(--ease-spring), opacity 0.3s var(--ease-out);
+        }
+        .banner-enter-from, .banner-leave-to {
+            transform: translateX(-50%) translateY(-16px);
+            opacity: 0;
+        }
+        .conn-banner-icon {
+            display: flex; align-items: center; justify-content: center;
+            width: 22px; height: 22px;
+            flex-shrink: 0;
+        }
+        .conn-banner-icon svg { width: 16px; height: 16px; stroke: var(--accent); }
+
+        /* Device flyout — minimal */
+        .flyout {
+            position: fixed; top: 54px; right: var(--s-4);
+            background: var(--bg-surface);
+            border-radius: var(--r-lg);
+            box-shadow: var(--shadow-lg);
+            border: 0.5px solid var(--border-subtle);
+            padding: 6px;
+            min-width: 220px; z-index: var(--z-dropdown);
+            display: block;
+            visibility: hidden;
+            opacity: 0;
+            transform: scale(0.96) translateY(-8px);
+            transform-origin: top right;
+            transition: opacity var(--dur-fast) var(--ease-out),
+                        transform var(--dur-fast) var(--ease-spring),
+                        visibility var(--dur-fast) var(--ease-out);
+            pointer-events: none;
+        }
+        @media (min-width: 640px) { .flyout { top: 58px; right: var(--s-8); } }
+        .flyout.open {
+            visibility: visible;
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+        .flyout-label {
+            font-size: 10px; font-weight: 600; color: var(--text-tertiary);
+            text-transform: uppercase; letter-spacing: 0.06em;
+            padding: 6px 10px;
+        }
+        .flyout-device {
+            display: flex; align-items: center; gap: var(--s-3);
+            padding: 8px 10px; border-radius: var(--r-sm);
+            transition: background var(--dur-hover) var(--ease-out),
+                        transform var(--dur-hover) var(--ease-out);
+        }
+        .flyout-device:hover { background: var(--bg-hover); }
+        .flyout-device:active { background: var(--bg-pressed); }
+        .flyout-device-icon {
+            width: 26px; height: 26px; border-radius: 6px;
+            background: var(--bg-hover); color: var(--text-secondary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; flex-shrink: 0;
+        }
+        .flyout-device-info { flex: 1; min-width: 0; }
+        .flyout-device-name { font-size: var(--text-sm); font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .flyout-device-meta { font-size: 11px; color: var(--text-tertiary); }
+        .flyout-tag {
+            font-size: 10px; font-weight: 500; color: var(--text-tertiary);
+            padding: 2px 6px; background: var(--bg-hover);
+            border-radius: var(--r-full); flex-shrink: 0;
+        }
+
+        /* ============================================================
+           HERO — minimal inline composition
+           ============================================================ */
+        .hero {
+            padding: var(--s-8) 0 var(--s-4);
+            transition: padding var(--dur-normal) var(--ease-out);
+        }
+        @media (min-width: 640px) {
+            .hero { padding: var(--s-10) 0 var(--s-6); }
+        }
+
+        /* WiFi hint — elegant capsule */
+        .wifi-hint {
+            font-size: 12px; color: var(--text-tertiary);
+            display: inline-flex; align-items: center; gap: 6px;
+            font-weight: 500;
+            letter-spacing: 0;
+            line-height: 1.4;
+            justify-content: center;
+            padding: 6px 14px;
+            background: var(--bg-inset);
+            border-radius: var(--r-full);
+            border: 0.5px solid var(--border-subtle);
+        }
+        .wifi-hint::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+        }
+
+        /* QR card — minimal */
+        .qr-card {
+            background: var(--bg-surface);
+            border-radius: var(--r-xl);
+            padding: 12px;
+            border: 0.5px solid var(--border-subtle);
+            display: inline-flex;
+            position: relative;
+            cursor: pointer;
+            transition: transform var(--dur-normal) var(--ease-out),
+                        border-color var(--dur-normal) var(--ease-out),
+                        box-shadow var(--dur-normal) var(--ease-out);
+            box-shadow: var(--shadow-2);
+        }
+        .qr-card:hover {
+            border-color: var(--border-medium);
+            box-shadow: var(--shadow-3);
+            transform: translateY(-2px);
+        }
+        .qr-card:active { transform: scale(0.98); }
+        .qr-img {
+            width: 192px; height: 192px; display: block;
+            transition: width var(--dur-normal) var(--ease-out),
+                        height var(--dur-normal) var(--ease-out);
+        }
+        @media (min-width: 640px) {
+            .qr-img { width: 192px; height: 192px; }
+        }
+
+        /* ── Connected State — horizontal layout: info left + mini QR right ── */
+        .hero.qr-compact {
+            padding: var(--s-3) 0 var(--s-5);
+        }
+        .hero-card.qr-compact {
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: var(--s-4);
+            align-items: center;
+            justify-content: space-between;
+            max-width: 480px;
+            background: var(--bg-surface);
+            border: 0.5px solid var(--border-subtle);
+            border-radius: var(--r-md);
+            padding: var(--s-4) var(--s-5);
+            position: relative;
+            overflow: hidden;
+        }
+        html.dark .hero-card.qr-compact {
+            background: var(--bg-surface);
+            border-color: var(--border-subtle);
+        }
+
+        /* Left section: status + URL */
+        .hero-card.qr-compact .compact-info {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: var(--s-2);
+            order: 1;
+        }
+
+        /* Connection status bar — compact mode styles (shown via .show class) */
+        .hero-card.qr-compact .conn-status-bar.show {
+            display: inline-flex;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            padding: 4px 10px;
+            background: transparent;
+            color: var(--accent);
+            align-self: flex-start;
+            margin: 0;
+        }
+
+        /* URL row */
+        .hero-card.qr-compact .url-row {
+            max-width: 100%;
+            flex: auto;
+            min-width: 0;
+            justify-content: space-between;
+            background: var(--bg-hover);
+            border-color: transparent;
+            margin: 0;
+        }
+
+        /* Mini QR card — right side */
+        .hero-card.qr-compact .qr-card {
+            width: 96px;
+            height: 96px;
+            flex-shrink: 0;
+            padding: 6px;
+            order: 2;
+            background: var(--bg-surface);
+            border: 0.5px solid var(--border-subtle);
+            border-radius: var(--r-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .hero-card.qr-compact .qr-img {
+            width: 100%;
+            height: 100%;
+            border-radius: calc(var(--r-lg) - 6px);
+        }
+
+        /* Expand hint: subtle below the row */
+        .hero-card.qr-compact .qr-expand-hint {
+            order: 3;
+            margin-top: 0;
+            font-size: 11px;
+            text-align: center;
+            display: block;
+            opacity: 0;
+            transition: opacity var(--dur-fast) var(--ease-out);
+            flex-basis: 100%;
+        }
+        .hero-card.qr-compact:hover .qr-expand-hint {
+            opacity: 0.7;
+        }
+
+        /* Steps and heading hidden when connected */
+        .hero.qr-compact .hero-steps { display: none; }
+        .hero.qr-compact .hero-heading { display: none; }
+
+        /* Wifi hint hidden in compact mode */
+        .hero-card.qr-compact .wifi-hint {
+            display: none;
+        }
+        @media (max-width: 640px) {
+            .steps-row { gap: var(--s-4); padding: 0 var(--s-2) var(--s-2); margin-bottom: var(--s-3); }
+        }
+        /* Step progress tracker — horizontal arrow chain */
+        .step-progress-item {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 4px;
+            min-width: 72px;
+            text-align: center;
+        }
+        .step-progress-icon {
+            width: 28px; height: 28px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700;
+            flex-shrink: 0;
+            background: transparent;
+            transition: color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+        }
+        .step-progress-icon svg {
+            width: 22px; height: 22px;
+            display: block;
+        }
+        .step-progress-item.pending .step-progress-icon svg {
+            opacity: 0.35;
+        }
+        .step-progress-item.active .step-progress-icon svg,
+        .step-progress-item.done .step-progress-icon svg {
+            opacity: 1;
+        }
+        .step-progress-item.pending .step-progress-icon {
+            color: var(--text-tertiary);
+        }
+        .step-progress-item.active .step-progress-icon {
+            color: var(--text-primary);
+        }
+        .step-progress-item.done .step-progress-icon {
+            color: var(--accent);
+        }
+        .step-progress-label {
+            font-size: 11px; font-weight: 600;
+            color: var(--text-tertiary);
+            letter-spacing: -0.01em;
+            transition: color var(--dur-fast) var(--ease-out);
+        }
+        .step-progress-item.active .step-progress-label { color: var(--text-primary); }
+        .step-progress-item.done .step-progress-label { color: var(--accent); }
+        .step-progress-arrow {
+            display: flex; align-items: center;
+            color: var(--border-subtle);
+            flex-shrink: 0;
+            padding: 0 4px;
+            margin-top: -12px; /* align with icon center */
+        }
+        .step-progress-arrow svg { width: 16px; height: 16px; }

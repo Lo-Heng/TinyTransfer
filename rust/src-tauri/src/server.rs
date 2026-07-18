@@ -19,6 +19,9 @@ use crate::state::AppState;
 /// 内嵌静态资源目录（构建时打包，作为磁盘 static/ 的 fallback）
 static EMBEDDED_STATIC: Dir = include_dir!("$CARGO_MANIFEST_DIR/dist/static");
 
+/// 内嵌 Vite 构建产物（JS/CSS，构建时打包，作为磁盘 assets/ 的 fallback）
+static EMBEDDED_ASSETS: Dir = include_dir!("$CARGO_MANIFEST_DIR/dist/assets");
+
 pub async fn start_server(
     state: Arc<AppState>,
     mut shutdown_rx: tokio::sync::broadcast::Receiver<()>,
@@ -49,6 +52,22 @@ fn find_static_file(path: &str) -> Option<std::path::PathBuf> {
         std::env::current_dir().ok().map(|p| p.join("dist/static").join(path)),
         std::env::current_dir().ok().map(|p| p.join("src-tauri/dist/static").join(path)),
         std::env::current_exe().ok().and_then(|p| p.parent().map(|p| p.join("dist/static").join(path))),
+    ];
+    
+    for candidate in candidates.iter().flatten() {
+        if candidate.exists() && candidate.is_file() {
+            return Some(candidate.clone());
+        }
+    }
+    None
+}
+
+/// 从磁盘查找 assets 文件（Vite 构建产物），按优先级查找
+fn find_assets_file(path: &str) -> Option<std::path::PathBuf> {
+    let candidates = vec![
+        std::env::current_dir().ok().map(|p| p.join("dist/assets").join(path)),
+        std::env::current_dir().ok().map(|p| p.join("src-tauri/dist/assets").join(path)),
+        std::env::current_exe().ok().and_then(|p| p.parent().map(|p| p.join("dist/assets").join(path))),
     ];
     
     for candidate in candidates.iter().flatten() {
@@ -97,6 +116,44 @@ async fn embedded_static(request: Request) -> Response {
     }
 }
 
+/// 从嵌入的 assets 目录提供 Vite 构建产物（JS/CSS）
+/// 优先读取磁盘 dist/assets/ 目录，找不到再回退到嵌入版本
+async fn embedded_assets(request: Request) -> Response {
+    let path = request
+        .uri()
+        .path()
+        .trim_start_matches("/assets/")
+        .trim_start_matches('/');
+
+    // 优先尝试磁盘
+    if let Some(disk_path) = find_assets_file(path) {
+        if let Ok(content) = std::fs::read(&disk_path) {
+            let mime = mime_guess::from_path(path).first_or_octet_stream();
+            return Response::builder()
+                .status(StatusCode::OK)
+                .header(CONTENT_TYPE, mime.as_ref())
+                .body(Body::from(content))
+                .unwrap();
+        }
+    }
+
+    // 回退到嵌入版本
+    match EMBEDDED_ASSETS.get_file(path) {
+        Some(file) => {
+            let mime = mime_guess::from_path(path).first_or_octet_stream();
+            Response::builder()
+                .status(StatusCode::OK)
+                .header(CONTENT_TYPE, mime.as_ref())
+                .body(Body::from(file.contents()))
+                .unwrap()
+        }
+        None => Response::builder()
+            .status(StatusCode::NOT_FOUND)
+            .body(Body::from("Not found"))
+            .unwrap(),
+    }
+}
+
 pub fn build_router(state: Arc<AppState>) -> Router {
     // API 路由
     let api_router = Router::new()
@@ -105,6 +162,8 @@ pub fn build_router(state: Arc<AppState>) -> Router {
         .route("/check-auth", get(routes::check_auth))
         .route("/auth", post(routes::post_auth))
         .route("/files", get(routes::list_files))
+        .route("/uploaded-files", get(routes::list_uploaded_files))
+        .route("/all-files", get(routes::list_all_files))
         .route("/download/:filename", get(routes::download_file))
         .route("/upload", post(routes::upload_file))
         .route("/upload-chunk", post(routes::upload_chunk))
@@ -130,6 +189,7 @@ pub fn build_router(state: Arc<AppState>) -> Router {
         .route("/", get(routes::index))
         .nest("/api", api_router)
         .nest_service("/static", static_service)
+        .route("/assets/*rest", get(embedded_assets))
         .layer(
             CorsLayer::new()
                 .allow_origin(Any)

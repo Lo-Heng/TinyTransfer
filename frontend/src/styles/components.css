@@ -1,0 +1,505 @@
+/* from index.html lines 306-818 */
+        /* ============================================================
+           FILE PREVIEW MODAL
+           ============================================================ */
+        .preview-modal {
+            position: fixed; inset: 0; z-index: var(--z-preview);
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.85);
+        }
+        .preview-container {
+            max-width: 90vw; max-height: 90vh;
+            background: var(--bg-surface);
+            border-radius: var(--r-xl);
+            box-shadow: var(--shadow-modal);
+            overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+        /* Vue Transition: modal — preview-container 动画 */
+        .modal-enter-active .preview-container,
+        .modal-leave-active .preview-container {
+            transition: transform var(--dur-spring) var(--ease-spring),
+                        opacity var(--dur-normal) var(--ease-out);
+        }
+        .modal-enter-from .preview-container,
+        .modal-leave-to .preview-container {
+            transform: scale(0.94) translateY(12px);
+            opacity: 0;
+        }
+        .preview-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: var(--s-4) var(--s-5);
+            border-bottom: 0.5px solid var(--border-subtle);
+        }
+        .preview-filename {
+            font-size: var(--text-base); font-weight: 600;
+            color: var(--text-primary);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            max-width: 60vw;
+        }
+        .preview-actions {
+            display: flex; align-items: center; gap: var(--s-2);
+        }
+        .preview-content {
+            flex: 1; overflow: auto;
+            display: flex; align-items: center; justify-content: center;
+            padding: var(--s-6);
+            min-height: 300px; min-width: 400px;
+        }
+        .preview-content img {
+            max-width: 100%; max-height: 70vh;
+            border-radius: var(--r-md);
+            object-fit: contain;
+            object-position: center;
+        }
+        .preview-content video {
+            max-width: 100%; max-height: 70vh;
+            border-radius: var(--r-md);
+            object-fit: contain;
+            object-position: center;
+        }
+        .preview-content audio {
+            width: 100%; max-width: 500px;
+        }
+        .preview-content iframe {
+            width: 80vw; height: 80vh;
+            border: none; border-radius: var(--r-md);
+        }
+        .preview-content .text-preview {
+            width: 80vw; height: 80vh;
+            background: var(--bg-page);
+            border: 0.5px solid var(--border-subtle);
+            border-radius: var(--r-md);
+            padding: var(--s-5);
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            color: var(--text-primary);
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .preview-unsupported {
+            text-align: center;
+            padding: var(--s-10);
+            color: var(--text-secondary);
+        }
+        .preview-unsupported .icon { font-size: 48px; }
+        .preview-unsupported p { margin-top: var(--s-3); }
+        /* 视频播放失败时的 fallback UI */
+        .video-fallback {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: var(--s-12) var(--s-8);
+            text-align: center;
+            gap: var(--s-3);
+        }
+        .video-fallback-icon-big {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--bg-hover);
+            color: var(--text-secondary);
+            margin-bottom: var(--s-4);
+        }
+        .video-fallback-name {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: var(--text-primary);
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .video-fallback-desc {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.6;
+        }
+        .video-fallback-hint {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin: 0;
+            margin-top: 4px;
+        }
+        .video-fallback-overlay,
+        .video-fallback-text {
+            display: none;
+        }
+        .preview-unsupported .icon {
+            font-size: 64px; margin-bottom: var(--s-4);
+        }
+
+        /* ============================================================
+           CONTEXT MENU — 右键菜单
+           ============================================================ */
+        .context-menu {
+            position: fixed; z-index: var(--z-context-menu);
+            background: var(--bg-surface);
+            border: 0.5px solid var(--border-subtle);
+            border-radius: var(--r-md);
+            box-shadow: var(--shadow-lg);
+            padding: 6px;
+            min-width: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95) translateY(-4px);
+            transition: opacity 0.15s ease, transform 0.15s var(--ease-spring),
+                        visibility 0.15s ease;
+        }
+        .context-menu.open {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+        }
+        .context-menu-item {
+            display: flex; align-items: center; gap: var(--s-3);
+            padding: 8px 12px;
+            border-radius: var(--r-sm);
+            font-size: var(--text-sm);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.1s ease;
+            user-select: none;
+        }
+        .context-menu-item:hover {
+            background: var(--bg-hover);
+            transform: translateX(2px);
+        }
+        .context-menu-item:active {
+            background: var(--bg-pressed);
+            transform: scale(0.98);
+        }
+        .context-menu-item.danger {
+            color: var(--red);
+        }
+        .context-menu-item.danger:hover {
+            background: var(--red-subtle);
+        }
+        .context-menu-divider {
+            height: 1px;
+            background: var(--border-subtle);
+            margin: 4px 0;
+        }
+
+        /* ============================================================
+           BOTTOM SHEET — 移动端底部操作面板
+           ============================================================ */
+        .bottom-sheet-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: var(--z-confirm);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .bottom-sheet {
+            width: 100%;
+            max-width: 500px;
+            background: var(--bg-surface);
+            border-radius: 16px 16px 0 0;
+            padding: 8px 0 20px;
+        }
+        /* Vue Transition: sheet */
+        .sheet-enter-active {
+            transition: opacity 0.3s var(--ease-out);
+        }
+        .sheet-leave-active {
+            transition: opacity 0.25s var(--ease-out);
+        }
+        .sheet-enter-from,
+        .sheet-leave-to {
+            opacity: 0;
+        }
+        .sheet-enter-active .bottom-sheet,
+        .sheet-leave-active .bottom-sheet {
+            transition: transform 0.4s var(--ease-spring);
+        }
+        .sheet-enter-from .bottom-sheet,
+        .sheet-leave-to .bottom-sheet {
+            transform: translateY(100%);
+        }
+        .bottom-sheet-handle {
+            width: 36px;
+            height: 5px;
+            background: var(--border-medium);
+            border-radius: 3px;
+            margin: 0 auto 8px;
+        }
+        .bottom-sheet-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            font-size: var(--text-base);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: background 0.15s var(--ease-out);
+            user-select: none;
+        }
+        .bottom-sheet-item:active {
+            background: var(--bg-hover);
+        }
+        .bottom-sheet-item.danger {
+            color: var(--red);
+        }
+        .bottom-sheet-item.cancel {
+            justify-content: center;
+            font-weight: 600;
+        }
+        .bs-icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            fill: none;
+            stroke: currentColor;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .bottom-sheet-divider {
+            height: 1px;
+            background: var(--border-subtle);
+            margin: 4px 0;
+        }
+        @media (min-width: 641px) {
+            .bottom-sheet-overlay {
+                display: none !important;
+            }
+        }
+
+        /* File card more button — 移动端文件卡片更多按钮 */
+        .file-card-more-btn {
+            display: none;
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--bg-surface);
+            border: 0.5px solid var(--border-subtle);
+            cursor: pointer;
+            z-index: 10;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            transition: color var(--dur-fast) var(--ease-out),
+                        background var(--dur-fast) var(--ease-out);
+        }
+        .file-card-more-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+        .file-card-more-btn:active {
+            background: var(--bg-pressed);
+            transform: scale(0.93);
+        }
+        @media (max-width: 640px) {
+            .file-card-more-btn {
+                display: flex;
+            }
+        }
+        .batch-mode .file-card-more-btn {
+            display: none !important;
+        }
+
+        /* ============================================================
+           CONFIRM DIALOG — iOS-style confirmation
+           ============================================================ */
+        .confirm-overlay {
+            position: fixed; inset: 0; z-index: var(--z-confirm);
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(2px);
+        }
+        .confirm-dialog {
+            width: 320px; max-width: 88vw;
+            background: var(--bg-surface);
+            border-radius: var(--r-2xl);
+            box-shadow: var(--shadow-modal);
+            overflow: hidden;
+        }
+        .confirm-body {
+            padding: var(--s-6) var(--s-6) var(--s-4);
+            text-align: center;
+        }
+        .confirm-icon-wrap {
+            width: 40px; height: 40px;
+            margin: 0 auto var(--s-4);
+            border-radius: var(--r-full);
+            background: var(--red-subtle);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .confirm-icon-wrap svg {
+            width: 18px; height: 18px;
+            color: var(--red);
+        }
+        .confirm-title {
+            font-size: var(--text-lg); font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--s-2);
+            letter-spacing: -0.02em;
+        }
+        .confirm-message {
+            font-size: var(--text-sm);
+            color: var(--text-tertiary);
+            line-height: var(--lh-relaxed);
+            margin-bottom: 0;
+        }
+        .confirm-filename {
+            display: inline-block;
+            margin-top: var(--s-2);
+            padding: var(--s-1) var(--s-3);
+            background: var(--bg-hover);
+            border-radius: var(--r-md);
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+            word-break: break-all;
+            max-width: 100%;
+        }
+        .confirm-actions {
+            display: flex; flex-direction: column; gap: var(--s-1);
+            padding: 0 var(--s-3) var(--s-3);
+            margin-top: var(--s-2);
+        }
+        .confirm-btn {
+            width: 100%;
+            padding: var(--s-3) var(--s-4);
+            background: var(--bg-hover);
+            border: none;
+            border-radius: var(--r-md);
+            font-family: var(--font-sans);
+            font-size: var(--text-base);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--dur-fast) var(--ease-out);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .confirm-btn:active {
+            background: var(--bg-pressed);
+            transform: scale(0.98);
+        }
+        .confirm-btn-cancel {
+            color: var(--text-primary);
+        }
+        .confirm-btn-cancel:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        .confirm-btn-danger {
+            color: var(--red);
+            font-weight: 600;
+            background: var(--red-subtle);
+        }
+        .confirm-btn-danger:hover {
+            background: rgba(255,59,48,0.15);
+        }
+        .confirm-btn:focus-visible {
+            outline: 2px solid var(--text-primary);
+            outline-offset: 2px;
+            border-radius: var(--r-md);
+        }
+
+        /* ============================================================
+           IMAGE PREVIEW — 图片放大查看
+           ============================================================ */
+        .img-preview-overlay {
+            position: fixed; inset: 0; z-index: var(--z-img-preview);
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.82);
+        }
+        .img-preview-wrap {
+            position: relative;
+            max-width: 92vw;
+            max-height: 86vh;
+        }
+        /* Vue Transition: img-preview */
+        .img-preview-enter-active,
+        .img-preview-leave-active {
+            transition: opacity var(--dur-normal) var(--ease-out);
+        }
+        .img-preview-enter-from,
+        .img-preview-leave-to {
+            opacity: 0;
+        }
+        .img-preview-enter-active .img-preview-wrap,
+        .img-preview-leave-active .img-preview-wrap {
+            transition: transform var(--dur-spring) var(--ease-spring);
+        }
+        .img-preview-enter-from .img-preview-wrap,
+        .img-preview-leave-to .img-preview-wrap {
+            transform: scale(0.94);
+        }
+        .img-preview-wrap img {
+            display: block;
+            max-width: 92vw;
+            max-height: 86vh;
+            border-radius: var(--r-lg);
+            box-shadow: none;
+            object-fit: contain;
+            object-position: center;
+        }
+        .img-preview-close {
+            position: absolute;
+            top: -44px; right: 0;
+            width: 36px; height: 36px;
+            border-radius: var(--r-full);
+            background: rgba(255,255,255,0.15);
+            border: none;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            color: #fff;
+            transition: background 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .img-preview-close:hover {
+            background: rgba(255,255,255,0.28);
+        }
+        .img-preview-close svg {
+            width: 18px; height: 18px;
+        }
+        .img-preview-name {
+            position: absolute;
+            bottom: -36px; left: 0; right: 0;
+            text-align: center;
+            font-size: var(--text-sm);
+            color: rgba(255,255,255,0.7);
+            font-weight: 500;
+            word-break: break-all;
+            padding: 0 var(--s-2);
+        }
+
+        /* ============================================================
+           MOBILE SELECT BUTTON
+           ============================================================ */
+        .mobile-select-btn {
+            display: none;
+            position: absolute; top: 8px; right: 8px;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: var(--bg-surface);
+            border: 0.5px solid var(--border-medium);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.15s ease;
+        }
+        .mobile-select-btn:hover {
+            background: var(--bg-hover);
+            transform: scale(1.1);
+        }
+        .mobile-select-btn.selected {
+            background: #111111;
+            border-color: #111111;
+            color: white;
+        }
+        html.dark .mobile-select-btn.selected {
+            background: #F5F5F5;
+            border-color: #F5F5F5;
+            color: #111111;
+        }
+        @media (max-width: 640px) {
+            .mobile-select-btn {
+                display: flex; align-items: center; justify-content: center;
+            }
+        }

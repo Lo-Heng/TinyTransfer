@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  },
+  "dependencies": {
+    "tiny-transfer-tauri": "file:rust/src-tauri"
+  }
+}

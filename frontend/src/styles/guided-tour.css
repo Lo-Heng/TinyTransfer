@@ -1,0 +1,176 @@
+/* from index.html lines 8045-8220, 8414-8687 */
+/* ============================================================
+   GUIDED TOUR OVERLAY — 蒙版式分步引导
+   ============================================================ */
+.guide-overlay {
+    position: fixed; inset: 0;
+    z-index: var(--z-guide);
+    pointer-events: none;
+    /* 不设置 background — spotlight 的 box-shadow 独立承担外部蒙版，
+       确保 spotlight 内部区域完全透明，目标元素以原始亮度显示 */
+    animation: guideFadeIn 0.4s var(--ease-out);
+}
+
+/* 居中模式（无 spotlight）时用伪元素提供黑底 */
+.guide-overlay.center-mode::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+}
+
+@keyframes guideFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Spotlight — 高亮挖空区域（完全透明，不遮挡目标元素） */
+.guide-spotlight {
+    position: absolute;
+    border-radius: var(--r-xl);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.72);
+    transition: all 0.45s var(--ease-out);
+    pointer-events: none;
+}
+
+/* 目标元素高亮态 */
+.guide-target-highlight {
+    position: relative;
+    z-index: 1501 !important;
+    transform: scale(1.04) !important;
+    transition: transform 0.45s var(--ease-spring) !important;
+    border-radius: var(--r-xl) !important;
+}
+
+/* Guide card — 引导卡片 */
+.guide-card {
+    position: absolute;
+    min-width: 280px;
+    max-width: 380px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #1c1c1e;
+    border-radius: var(--r-2xl);
+    padding: var(--s-4) var(--s-4);
+    box-shadow: none;
+    transition: all 0.45s var(--ease-out);
+    animation: guideCardIn 0.5s var(--ease-spring);
+    pointer-events: auto;
+}
+.guide-card.dark {
+    background: rgba(28, 28, 30, 0.98);
+    color: #fff;
+    border: 0.5px solid rgba(255,255,255,0.12);
+}
+@keyframes guideCardIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.92); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Arrow — 指向箭头 */
+.guide-arrow {
+    position: absolute;
+    width: 20px; height: 20px;
+    background: inherit;
+    transform: rotate(45deg);
+}
+.guide-arrow.top    { left: 50%; margin-left: -10px; top: -8px; }
+.guide-arrow.bottom { left: 50%; margin-left: -10px; bottom: -8px; }
+.guide-arrow.left   { top: 50%; margin-top: -10px; left: -8px; }
+.guide-arrow.right  { top: 50%; margin-top: -10px; right: -8px; }
+
+.guide-card-title {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: var(--s-2);
+    display: flex; align-items: center; gap: 8px;
+}
+.guide-card-icon { display: flex; align-items: center; color: var(--text-primary); }
+.guide-card-text {
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: var(--s-4);
+}
+.guide-card:not(.dark) .guide-card-text {
+    color: #515154;
+}
+.guide-card-progress {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--s-3);
+    margin-bottom: var(--s-3);
+}
+.guide-step-indicator {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-primary);
+    background: var(--bg-hover);
+    padding: 3px 10px;
+    border-radius: var(--r-full);
+    letter-spacing: 0.02em;
+}
+.guide-dots {
+    display: flex; gap: 6px;
+}
+.guide-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transition: all var(--dur-fast) var(--ease-out);
+}
+.guide-card:not(.dark) .guide-dot {
+    background: #d1d1d6;
+}
+.guide-dot.active {
+    width: 18px;
+    border-radius: 3px;
+    background: var(--text-primary);
+}
+.guide-card-actions {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--s-3);
+}
+.guide-btn-skip {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: var(--r-full);
+    transition: color var(--dur-hover) var(--ease-out),
+                background var(--dur-hover) var(--ease-out),
+                transform var(--dur-hover) var(--ease-out);
+}
+.guide-card:not(.dark) .guide-btn-skip {
+    color: #8e8e93;
+}
+.guide-btn-skip:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.08); }
+.guide-btn-skip:active { background: rgba(255,255,255,0.04); }
+.guide-card:not(.dark) .guide-btn-skip:hover { color: #3a3a3c; background: rgba(0,0,0,0.05); }
+
+.guide-btn-next {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 18px;
+    border-radius: var(--r-sm);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    background: #111111;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-out);
+}
+.guide-btn-next:hover {
+    background: #333333;
+}
+.guide-btn-next:active {
+    background: #000000;
+}
+.guide-card.dark .guide-btn-next {
+    background: #F5F5F5;
+    color: #111111;
+}
+.guide-card.dark .guide-btn-next:hover { background: #DDDDDD; }
+.guide-card.dark .guide-btn-next:active { background: #FFFFFF; }

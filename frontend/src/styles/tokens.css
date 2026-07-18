@@ -1,0 +1,119 @@
+/* from index.html lines 11-128 */
+        /* ============================================================
+           DESIGN TOKENS — Minimal & Elegant
+           ============================================================ */
+        :root {
+            /* Accent — burnt orange, warm & premium */
+            --accent-50: #FDF8F3;
+            --accent-100: #F9EFE2;
+            --accent-200: #F0D5B8;
+            --accent-400: #F0A35E;
+            --accent-500: #E67E22;
+            --accent-600: #D35400;
+            --accent-700: #A04000;
+            --accent: #E67E22;
+            --accent-hover: #D35400;
+            --accent-subtle: rgba(230, 126, 34, 0.08);
+            --accent-pressed: rgba(230, 126, 34, 0.14);
+            --accent-light: #FDF8F3;
+            --accent-block: #E67E22;
+            /* Brand blue — kept for legacy */
+            --blue: #007AFF;
+            --blue-hover: #0064D6;
+            --blue-subtle: rgba(0,122,255,0.08);
+            --blue-pressed: rgba(0,122,255,0.14);
+            /* Semantic — unified saturation */
+            --green: #30D158;
+            --green-subtle: rgba(48,209,88,0.12);
+            --red: #FF453A;
+            --red-subtle: rgba(255,69,58,0.12);
+            --orange: #FF9F0A;
+            /* Neutral — warm stone, unified color temperature */
+            --bg-page: #FFFCF9;
+            --bg-surface: #FFFFFF;
+            --bg-elevated: #FFFFFF;
+            --bg-inset: #F9F7F5;
+            --bg-hover: rgba(230,126,34,0.05);
+            --bg-pressed: rgba(230,126,34,0.09);
+            --text-primary: #1C1917;
+            --text-secondary: #57534E;
+            --text-tertiary: #A8A29E;
+            --text-quaternary: #D6D3D1;
+            --border-subtle: rgba(28,25,23,0.06);
+            --border-medium: rgba(28,25,23,0.10);
+            --border-strong: rgba(28,25,23,0.16);
+            /* Shadow — 3-tier system, warm-tinted */
+            --shadow-1: 0 1px 2px rgba(28,25,23,0.03), 0 1px 1px rgba(28,25,23,0.02);
+            --shadow-2: 0 2px 6px rgba(28,25,23,0.04), 0 1px 2px rgba(28,25,23,0.02);
+            --shadow-3: 0 8px 28px rgba(28,25,23,0.08), 0 2px 8px rgba(28,25,23,0.04);
+            --shadow-modal: 0 20px 60px rgba(28,25,23,0.12), 0 4px 16px rgba(28,25,23,0.06);
+            --shadow-float: 0 6px 24px rgba(28,25,23,0.10), 0 2px 6px rgba(28,25,23,0.04);
+            --shadow-accent: 0 4px 16px rgba(230,126,34,0.22);
+            --shadow-accent-lg: 0 8px 28px rgba(230,126,34,0.28);
+            /* Radius — soft & consistent */
+            --r-xs: 4px; --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-2xl: 24px;
+            --r-full: 9999px;
+            /* Spacing — rhythmic scale, generous whitespace */
+            --s-0: 2px; --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px;
+            --s-5: 20px; --s-6: 28px; --s-8: 40px; --s-10: 56px; --s-12: 72px;
+            --s-14: 88px; --s-16: 104px; --s-20: 144px;
+            /* Typography — extreme contrast, refined */
+            --font-sans: "PingFang SC", "Noto Sans SC", "HarmonyOS Sans", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
+            --font-mono: 'SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', 'PingFang SC', monospace;
+            --text-xs: 11px; --text-sm: 13px; --text-base: 14px;
+            --text-lg: 16px; --text-xl: 18px; --text-2xl: 22px;
+            --text-3xl: 28px; --text-4xl: 36px;
+            --text-hero: 52px; --text-hero-sm: 56px; --text-section: 26px;
+            /* Line heights */
+            --lh-tight: 1.15; --lh-normal: 1.55; --lh-relaxed: 1.7;
+            /* Motion — unified curve system
+               --ease-out:      减速入场
+               --ease-standard: 标准缓动
+               --ease-enter:    快速入场
+               --ease-exit:     快速离场
+               --ease-spring:   弹簧回弹
+            */
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-enter: cubic-bezier(0, 0, 0.2, 1);
+            --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --dur-fast: 150ms; --dur-normal: 250ms; --dur-slow: 400ms;
+            --dur-spring: 0.5s; --dur-hover: 300ms;
+            /* Z-index layers — bottom to top */
+            --z-topbar: 100;
+            --z-dropdown: 200;
+            --z-banner: 250;
+            --z-modal: 300;
+            --z-toast: 400;
+            --z-overlay: 500;
+            --z-preview: 1000;
+            --z-context-menu: 1100;
+            --z-confirm: 1200;
+            --z-img-preview: 1300;
+            --z-guide: 1500;
+            --z-dev: 9999;
+        }
+
+        html.dark {
+            --bg-page: #12100E;
+            --bg-surface: #1C1917;
+            --bg-elevated: #292524;
+            --bg-inset: #0C0A09;
+            --bg-hover: rgba(255,255,255,0.04);
+            --bg-pressed: rgba(255,255,255,0.07);
+            --text-primary: #F5F3EF;
+            --text-secondary: #A8A29E;
+            --text-tertiary: #78716C;
+            --text-quaternary: #44403C;
+            --border-subtle: rgba(255,255,255,0.06);
+            --border-medium: rgba(255,255,255,0.10);
+            --border-strong: rgba(255,255,255,0.16);
+            --shadow-1: 0 1px 2px rgba(0,0,0,0.3), 0 1px 1px rgba(0,0,0,0.2);
+            --shadow-2: 0 2px 6px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+            --shadow-3: 0 8px 28px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-modal: 0 20px 60px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.4);
+            --shadow-float: 0 6px 24px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3);
+            --shadow-accent: 0 4px 16px rgba(230,126,34,0.18);
+            --shadow-accent-lg: 0 8px 28px rgba(230,126,34,0.22);
+        }

@@ -21,7 +21,15 @@ echo ========================================
 echo.
 
 :build
-echo [1/5] Check TinyTransfer process...
+echo [1/6] Build icons from SVG...
+echo       Installing root dependencies (for @resvg/resvg-js)...
+call npm install --prefix "%ROOT%" >nul 2>&1
+call python "%ROOT%\scripts\build-icons.py"
+if errorlevel 1 goto :build_failed
+echo       OK
+echo.
+
+echo [2/6] Check TinyTransfer process...
 tasklist /fi "imagename eq TinyTransfer.exe" 2>nul | find /i "TinyTransfer.exe" >nul
 if %errorlevel%==0 (
     echo       Found, killing...
@@ -33,12 +41,16 @@ if %errorlevel%==0 (
 )
 echo.
 
-echo [2/5] Create output dir...
+echo [3/6] Create output dir...
 if not exist "%OUT%" mkdir "%OUT%"
 echo       OK
 echo.
 
-echo [3/5] Building Release...
+echo [4/6] Building Release...
+echo       Installing frontend dependencies...
+call npm install --prefix "%ROOT%\frontend"
+if errorlevel 1 goto :build_failed
+echo       Building (Tauri CLI runs npm run build + cargo build)...
 echo       Please wait...
 echo.
 
@@ -59,7 +71,7 @@ goto :build
 
 :build_ok
 echo.
-echo [4/5] Copy files to output...
+echo [5/6] Copy files to output...
 set "TARGET=%ROOT%\rust\target\release"
 copy /Y "%TARGET%\TinyTransfer.exe" "%OUT%\TinyTransfer.exe" >nul 2>&1
 copy /Y "%TARGET%\WebView2Loader.dll" "%OUT%\WebView2Loader.dll" >nul 2>&1
@@ -67,7 +79,7 @@ echo       output\TinyTransfer.exe
 echo       output\WebView2Loader.dll
 echo.
 
-echo [5/5] Launch app...
+echo [6/6] Launch app...
 if not exist "%OUT%\TinyTransfer.exe" goto :no_exe
 powershell -NoProfile -Command "Start-Process -FilePath '%OUT%\TinyTransfer.exe'"
 echo       Launched

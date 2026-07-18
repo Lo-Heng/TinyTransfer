@@ -39,3 +39,18 @@ rust/src-tauri/dist/static/
 
 # skills lock
 skills-lock.json
+
+# Frontend dependencies
+frontend/node_modules/
+node_modules/
+
+# Legacy backups
+.legacy/
+
+# Test artifacts (screenshots, run logs)
+tests/screenshots/
+tests/.ab-socket/
+tests/test-report.txt
+
+# Icon build test artifacts
+rust/src-tauri/icons/test_source.png

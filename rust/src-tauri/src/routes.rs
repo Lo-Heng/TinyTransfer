@@ -222,7 +222,15 @@ pub async fn get_ip(State(state): State<Arc<AppState>>) -> impl IntoResponse {
 // ============================================================
 
 pub async fn list_files(State(state): State<Arc<AppState>>) -> impl IntoResponse {
-    Json(json!({ "files": state.file_manager.list_files() }))
+    Json(state.file_manager.list_files())
+}
+
+pub async fn list_uploaded_files(State(state): State<Arc<AppState>>) -> impl IntoResponse {
+    Json(state.file_manager.list_files())
+}
+
+pub async fn list_all_files(State(state): State<Arc<AppState>>) -> impl IntoResponse {
+    Json(state.file_manager.list_files())
 }
 
 // ============================================================
@@ -400,6 +408,8 @@ pub async fn delete_files(
     Json(req): Json<DeleteFilesRequest>,
 ) -> impl IntoResponse {
     let deleted = state.file_manager.delete_files(&req.filenames);
+    // 通知所有端文件列表已更新
+    state.broker.broadcast("file_list_updated", json!({"action": "delete"}));
     Json(DeleteFilesResponse {
         success: true,
         deleted,
