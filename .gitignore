@@ -34,8 +34,8 @@ nul
 *.log
 debug.log
 
-# Rust src-tauri dist static (optional, embedded in binary)
-rust/src-tauri/dist/static/
+# Rust src-tauri dist (Vite build output, embedded in binary via include_dir!)
+rust/src-tauri/dist/
 
 # skills lock
 skills-lock.json
