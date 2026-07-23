@@ -28,6 +28,15 @@ pub(crate) use debug_log;
 
 #[tokio::main]
 pub async fn run() {
+    // Windows: 释放嵌入的 WebView2Loader.dll 到临时目录并加入 DLL 搜索路径
+    // 这样 exe 可以独立分发，不需要外挂 DLL
+    #[cfg(target_os = "windows")]
+    {
+        if let Err(e) = release_embedded_webview2_loader() {
+            eprintln!("[init] WebView2Loader.dll release failed: {e}");
+        }
+    }
+
     // 单实例检测：已有实例运行则立即退出
     if !platform::current().ensure_single_instance() {
         debug_log!("[init] 已有实例运行，退出");
@@ -148,3 +157,69 @@ pub async fn run() {
         eprintln!("[HTTP] Server task panicked: {e}");
     }
 }
+
+/// Windows 专用：释放嵌入的 WebView2Loader.dll 到临时目录并加入 DLL 搜索路径
+///
+/// 实现原理：
+/// 1. 编译时用 include_bytes! 把 DLL 字节数组编进 exe
+/// 2. 启动时把字节写入到 %LOCALAPPDATA%\TinyTransfer\WebView2Loader.dll
+/// 3. 调用 SetDllDirectoryW 把该目录加入 DLL 搜索路径
+/// 4. Tauri 框架启动时 LoadLibraryW("WebView2Loader.dll") 会从该目录加载
+///
+/// 这样 exe 可以独立分发，不需要外挂 DLL
+#[cfg(target_os = "windows")]
+fn release_embedded_webview2_loader() -> std::io::Result<()> {
+    use std::os::windows::ffi::OsStrExt;
+    use std::path::PathBuf;
+
+    // 嵌入的 DLL 字节（编译时读取 resources/WebView2Loader.dll）
+    const EMBEDDED_DLL: &[u8] = include_bytes!("../resources/WebView2Loader.dll");
+
+    // 目标目录：%LOCALAPPDATA%\TinyTransfer\Cache\
+    // 固定路径，不随版本变化，避免升级后残留多个目录
+    let target_dir = std::env::var_os("LOCALAPPDATA")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| std::env::temp_dir())
+        .join("TinyTransfer")
+        .join("Cache");
+
+    std::fs::create_dir_all(&target_dir)?;
+
+    let target_dll = target_dir.join("WebView2Loader.dll");
+
+    // 仅在文件不存在或大小不同时写入，避免每次启动都写盘
+    let need_write = match std::fs::metadata(&target_dll) {
+        Ok(meta) => meta.len() as usize != EMBEDDED_DLL.len(),
+        Err(_) => true,
+    };
+
+    if need_write {
+        std::fs::write(&target_dll, EMBEDDED_DLL)?;
+        debug_log!("[init] WebView2Loader.dll released to {}", target_dll.display());
+    }
+
+    // 调用 SetDllDirectoryW 将目标目录加入 DLL 搜索路径
+    // 原型：BOOL SetDllDirectoryW(LPCWSTR lpPathName)
+    // 返回 0 表示失败
+    extern "system" {
+        fn SetDllDirectoryW(lpPathName: *const u16) -> i32;
+    }
+
+    let path_wide: Vec<u16> = target_dir
+        .as_os_str()
+        .encode_wide()
+        .chain(std::iter::once(0))
+        .collect();
+
+    let result = unsafe { SetDllDirectoryW(path_wide.as_ptr()) };
+    if result == 0 {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            "SetDllDirectoryW failed",
+        ));
+    }
+
+    debug_log!("[init] DLL search path updated: {}", target_dir.display());
+    Ok(())
+}
+

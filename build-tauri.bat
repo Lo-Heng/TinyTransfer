@@ -74,9 +74,8 @@ echo.
 echo [5/6] Copy files to output...
 set "TARGET=%ROOT%\rust\target\release"
 copy /Y "%TARGET%\TinyTransfer.exe" "%OUT%\TinyTransfer.exe" >nul 2>&1
-copy /Y "%TARGET%\WebView2Loader.dll" "%OUT%\WebView2Loader.dll" >nul 2>&1
 echo       output\TinyTransfer.exe
-echo       output\WebView2Loader.dll
+echo       WebView2Loader.dll embedded in exe (no external DLL needed)
 echo.
 
 echo [6/6] Launch app...
