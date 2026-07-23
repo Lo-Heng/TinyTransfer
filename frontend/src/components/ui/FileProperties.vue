@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useFilesStore } from '@/stores/files'
-import { formatBytes, formatTime } from '@/utils/format'
+import { formatBytes, formatDateTime } from '@/utils/format'
 import FileIcon from '@/components/icons/FileIcon.vue'
 
 const files = useFilesStore()
@@ -59,7 +59,7 @@ defineExpose({ show, close })
             </div>
             <div class="file-prop-row">
               <span class="file-prop-label">修改时间</span>
-              <span class="file-prop-value">{{ file ? formatTime(file.modified) : '—' }}</span>
+              <span class="file-prop-value">{{ file ? formatDateTime(file.modified) : '—' }}</span>
             </div>
           </div>
         </div>

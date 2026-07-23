@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useFilesStore } from '@/stores/files'
 import { useUiStore } from '@/stores/ui'
 import { useUpload } from '@/composables/useUpload'
 import { useDownload } from '@/composables/useDownload'
 import { useTauri } from '@/composables/useTauri'
+import { usePullRefresh } from '@/composables/usePullRefresh'
 import { getDiskInfo } from '@/api/system'
 import { formatBytes } from '@/utils/format'
 import FileCard from './FileCard.vue'
@@ -24,6 +25,7 @@ const ui = useUiStore()
 const { openUploadModal } = useUpload()
 const { downloadAllFiles } = useDownload()
 const { openShareFolder } = useTauri()
+const { pullState, initPullToRefresh, destroyPullToRefresh } = usePullRefresh()
 
 // 磁盘信息
 const diskFree = ref('')
@@ -62,6 +64,12 @@ const showDownloadAll = computed(() => auth.userRole === 'guest' && !files.isEmp
 
 onMounted(() => {
   if (auth.userRole === 'host') loadDiskInfo()
+  // 初始化下拉刷新(内部会判断是否移动端,非移动端为 no-op)
+  initPullToRefresh(document.body)
+})
+
+onUnmounted(() => {
+  destroyPullToRefresh(document.body)
 })
 </script>
 
@@ -137,7 +145,10 @@ onMounted(() => {
     <BatchBar @delete-selected="emit('delete-selected')" />
 
     <!-- Pull to refresh indicator -->
-    <PullRefreshIndicator />
+    <PullRefreshIndicator
+      :visible="pullState.distance > 0 || pullState.isRefreshing || pullState.showSuccess"
+      :loading="pullState.isRefreshing"
+    />
 
     <!-- Download all (guest) -->
     <div v-if="showDownloadAll" class="files-header visible">
@@ -147,23 +158,28 @@ onMounted(() => {
       </button>
     </div>
 
-    <!-- File grid -->
+    <!-- File grid + empty state, wrapped for view mode class -->
     <div
-      v-if="!files.isEmpty"
-      class="file-grid"
-      :class="{ 'file-grid-entrance': !files.isEmpty, 'list-view': files.currentView === 'list' }"
+      :class="{ 'file-list-mode': files.currentView === 'list' }"
+      style="width:100%;"
     >
-      <div class="group-header">共 {{ files.filteredFiles.length }} 个文件</div>
-      <FileCard
-        v-for="f in files.filteredFiles"
-        :key="f.name"
-        :file="f"
-        @long-press="emit('long-press', $event)"
-      />
-    </div>
+      <!-- File grid -->
+      <div
+        v-if="!files.isEmpty"
+        class="file-grid"
+        :class="{ 'file-grid-entrance': !files.isEmpty }"
+      >
+        <div class="group-header">共 {{ files.filteredFiles.length }} 个文件</div>
+        <FileCard
+          v-for="f in files.filteredFiles"
+          :key="f.name"
+          :file="f"
+          @long-press="emit('long-press', $event)"
+        />
+      </div>
 
-    <!-- Empty state -->
-    <div v-else class="empty-state visible" role="status" aria-live="polite">
+      <!-- Empty state -->
+      <div v-else class="empty-state visible" role="status" aria-live="polite">
       <div class="empty-illustration">
         <svg viewBox="0 0 160 140" fill="none" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -195,6 +211,7 @@ onMounted(() => {
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         </span>
       </button>
+    </div>
     </div>
   </section>
 </template>

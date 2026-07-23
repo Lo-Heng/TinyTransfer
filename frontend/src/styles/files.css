@@ -535,7 +535,7 @@
 
         /* Batch bar — minimal */
         .batch-bar {
-            display: none;
+            display: flex;
             align-items: center; justify-content: space-between;
             padding: 10px 16px; margin-bottom: var(--s-3);
             background: #111111;
@@ -546,9 +546,6 @@
         html.dark .batch-bar {
             background: #F5F5F5;
             color: #111111;
-        }
-        .batch-mode .batch-bar {
-            display: flex;
         }
         .batch-bar-actions { display: flex; gap: var(--s-2); }
         .batch-btn {

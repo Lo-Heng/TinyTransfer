@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import type { FileInfo } from '@/api/files'
 import { getDownloadUrl } from '@/api/files'
-import { formatBytes, formatTime } from '@/utils/format'
+import { formatBytes, formatDateTime } from '@/utils/format'
 import { useFilesStore } from '@/stores/files'
 import { useFilePreview } from '@/composables/useFilePreview'
 import { useContextMenu } from '@/composables/useContextMenu'
@@ -139,7 +139,7 @@ function onTouchEnd() {
     <div class="file-card-meta">
       <span>{{ formatBytes(file.size || 0) }}</span>
       <span class="meta-dot"></span>
-      <span>{{ formatTime(file.modified) }}</span>
+      <span>{{ formatDateTime(file.modified) }}</span>
     </div>
     <span v-if="hasExt" class="file-card-ext">.{{ ext }}</span>
   </div>
