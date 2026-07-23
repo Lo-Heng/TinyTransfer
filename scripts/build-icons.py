@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import subprocess
+from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SVG_SRC = os.path.join(ROOT, 'frontend', 'public', 'static', 'icons', 'lightning.svg')
@@ -33,6 +34,78 @@ def run_tauri_icon():
     if result.stderr:
         print(result.stderr)
     return result.returncode == 0
+
+def generate_proper_ico():
+    import struct
+    sizes = [16, 24, 32, 48, 64, 128, 256]
+    src = Image.open(SOURCE_PNG).convert('RGBA')
+    
+    icon_entries = []
+    icon_data = b''
+    data_offset = 6 + len(sizes) * 16
+    
+    for size in sizes:
+        img = src.resize((size, size), Image.LANCZOS)
+        pixels = img.load()
+        
+        xor_data = bytearray()
+        and_data = bytearray()
+        row_pad = (4 - ((size * 4) % 4)) % 4
+        and_row_bytes = (size + 31) // 32 * 4
+        
+        for y in range(size - 1, -1, -1):
+            for x in range(size):
+                r, g, b, a = pixels[x, y]
+                xor_data.extend([b, g, r, a])
+            for _ in range(row_pad):
+                xor_data.append(0)
+        
+        for y in range(size - 1, -1, -1):
+            for byte_idx in range(and_row_bytes):
+                byte_val = 0
+                for bit_idx in range(8):
+                    pixel_idx = byte_idx * 8 + bit_idx
+                    if pixel_idx < size:
+                        _, _, _, a = pixels[pixel_idx, y]
+                        if a < 128:
+                            byte_val |= (1 << (7 - bit_idx))
+                and_data.append(byte_val)
+        
+        biSize = 40
+        biWidth = size
+        biHeight = size * 2
+        biPlanes = 1
+        biBitCount = 32
+        biCompression = 0
+        biSizeImage = len(xor_data) + len(and_data)
+        
+        bmp_header = struct.pack('<IiiHHIIiiII',
+            biSize, biWidth, biHeight, biPlanes, biBitCount,
+            biCompression, biSizeImage, 0, 0, 0, 0)
+        
+        icon_img_data = bmp_header + bytes(xor_data) + bytes(and_data)
+        
+        w = size if size < 256 else 0
+        h = size if size < 256 else 0
+        entry = struct.pack('<BBBBHHII',
+            w, h, 0, 0, 1, 32,
+            len(icon_img_data), data_offset)
+        
+        icon_entries.append(entry)
+        data_offset += len(icon_img_data)
+        icon_data += icon_img_data
+    
+    header = struct.pack('<HHH', 0, 1, len(sizes))
+    
+    ico_path = os.path.join(ICONS_DIR, 'icon.ico')
+    with open(ico_path, 'wb') as f:
+        f.write(header)
+        for entry in icon_entries:
+            f.write(entry)
+        f.write(icon_data)
+    
+    print(f'Generated proper ICO with BMP+AND mask: {ico_path}')
+    return True
 
 def cleanup_unwanted():
     unwanted = ['Square30x30Logo.png', 'Square44x44Logo.png', 'Square71x71Logo.png',
@@ -99,13 +172,17 @@ def main():
         print('Error: tauri icon command failed')
         sys.exit(1)
 
-    print('\n3. Cleaning up unwanted icons...')
+    print('\n3. Generating proper ICO (BMP + AND mask)...')
+    if not generate_proper_ico():
+        print('Warning: proper ICO generation failed, using tauri default')
+
+    print('\n4. Cleaning up unwanted icons...')
     cleanup_unwanted()
 
-    print('\n4. Organizing icons into platform directories...')
+    print('\n5. Organizing icons into platform directories...')
     organize_icons()
 
-    print('\n5. Syncing SVG to dist/static/icons/...')
+    print('\n6. Syncing SVG to dist/static/icons/...')
     sync_svg_to_dist()
 
     print('\n' + '=' * 50)
