@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { ref, watch, onUnmounted } from 'vue'
 import { useContextMenu } from '@/composables/useContextMenu'
 import { useDownload } from '@/composables/useDownload'
 import { useFilesStore } from '@/stores/files'
+import { useUiStore } from '@/stores/ui'
 
 const emit = defineEmits<{
   (e: 'show-properties', filename: string): void
@@ -11,6 +13,27 @@ const emit = defineEmits<{
 const { contextMenuState, hideContextMenu } = useContextMenu()
 const { downloadSingleFile } = useDownload()
 const files = useFilesStore()
+const ui = useUiStore()
+
+const menuRef = ref<HTMLElement | null>(null)
+
+function handleClickOutside(e: MouseEvent) {
+  if (!menuRef.value) return
+  if (menuRef.value.contains(e.target as Node)) return
+  hideContextMenu()
+}
+
+watch(() => contextMenuState.visible, (isVisible) => {
+  if (isVisible) {
+    document.addEventListener('mousedown', handleClickOutside)
+  } else {
+    document.removeEventListener('mousedown', handleClickOutside)
+  }
+})
+
+onUnmounted(() => {
+  document.removeEventListener('mousedown', handleClickOutside)
+})
 
 function download() {
   if (contextMenuState.filename) downloadSingleFile(contextMenuState.filename)
@@ -20,12 +43,21 @@ function download() {
 async function share() {
   const name = contextMenuState.filename
   if (!name) return
-  try {
-    if (navigator.share) {
-      await navigator.share({ title: name, url: '/api/download/' + encodeURIComponent(name) })
+  const shareUrl = window.location.origin + '/api/download/' + encodeURIComponent(name)
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: name, url: shareUrl })
+    } catch (e) {
+      /* 用户取消 */
     }
-  } catch (e) {
-    /* 用户取消等 */
+  } else {
+    // 不支持原生分享时,改为复制链接
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      ui.showToast('链接已复制', 'success')
+    } catch (e) {
+      ui.showToast('复制失败,请手动复制', 'error')
+    }
   }
   hideContextMenu()
 }
@@ -51,6 +83,7 @@ function confirmDelete() {
 
 <template>
   <div
+    ref="menuRef"
     class="context-menu"
     :class="{ open: contextMenuState.visible }"
     :style="{ left: contextMenuState.x + 'px', top: contextMenuState.y + 'px' }"

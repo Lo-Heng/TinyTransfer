@@ -47,7 +47,14 @@ defineExpose({ show, close })
 
 <template>
   <Transition name="modal">
-    <div v-if="open" class="confirm-overlay">
+    <div
+      v-if="open"
+      class="confirm-overlay"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="title"
+      @click.self="onCancel"
+    >
       <div class="confirm-dialog">
         <div class="confirm-body">
           <div class="confirm-icon-wrap">

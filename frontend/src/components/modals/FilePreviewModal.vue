@@ -17,7 +17,14 @@ function download() {
 
 <template>
   <Transition name="modal">
-    <div v-if="previewState.visible" class="preview-modal" @click.self="closePreview">
+    <div
+      v-if="previewState.visible"
+      class="preview-modal"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="previewState.filename || '文件预览'"
+      @click.self="closePreview"
+    >
       <div class="preview-container">
         <div class="preview-header">
           <span class="preview-filename">{{ previewState.filename }}</span>

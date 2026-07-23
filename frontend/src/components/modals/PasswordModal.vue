@@ -37,7 +37,14 @@ defineExpose({ show, close })
 
 <template>
   <Transition name="modal">
-    <div v-if="open" class="modal-overlay" @click.self="close">
+    <div
+      v-if="open"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="输入访问密码"
+      @click.self="close"
+    >
       <div class="modal-sheet">
         <div class="modal-header">
           <h3 class="modal-title">输入访问密码</h3>

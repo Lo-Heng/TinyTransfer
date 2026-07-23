@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch, onUnmounted } from 'vue'
 import { useUploadStore } from '@/stores/upload'
 import { useUiStore } from '@/stores/ui'
 import { useUpload } from '@/composables/useUpload'
@@ -16,10 +16,12 @@ function openPicker() {
   fileInput.value?.click()
 }
 
+// 选完文件后立即上传,简化用户操作步骤
 function onFileChange(e: Event) {
   const input = e.target as HTMLInputElement
   if (input.files && input.files.length > 0) {
     upload.setFiles(Array.from(input.files))
+    startUpload()
   }
   input.value = ''
 }
@@ -28,6 +30,7 @@ function onDrop(e: DragEvent) {
   isDragOver.value = false
   if (e.dataTransfer && e.dataTransfer.files.length > 0) {
     upload.setFiles(Array.from(e.dataTransfer.files))
+    startUpload()
   }
 }
 
@@ -35,9 +38,26 @@ function removeFile(i: number) {
   upload.selectedFiles.splice(i, 1)
 }
 
-function overlayClick(e: MouseEvent) {
-  if (e.target === e.currentTarget && !upload.isUploading) closeUploadModal()
+function overlayClick() {
+  if (!upload.isUploading) closeUploadModal()
 }
+
+// Escape 键关闭(上传中不可关闭)
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && !upload.isUploading) closeUploadModal()
+}
+
+watch(() => upload.uploadModalOpen, (open) => {
+  if (open) {
+    window.addEventListener('keydown', onKeydown)
+  } else {
+    window.removeEventListener('keydown', onKeydown)
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKeydown)
+})
 
 const speedText = () => {
   const s = formatSpeed(upload.uploadSpeed)
@@ -50,7 +70,10 @@ const speedText = () => {
     <div
       v-if="upload.uploadModalOpen"
       class="modal-overlay"
-      @click="overlayClick"
+      role="dialog"
+      aria-modal="true"
+      aria-label="上传文件"
+      @click.self="overlayClick"
     >
       <div class="modal-sheet">
         <div class="modal-header">
@@ -76,7 +99,6 @@ const speedText = () => {
             <input type="file" multiple style="display:none;" accept="*/*" ref="fileInput" @change="onFileChange" />
           </div>
         </div>
-        <div class="drop-zone-tip">💡 想要原视频不压缩？选择「浏览」从文件中选取</div>
 
         <!-- Selected files list -->
         <div v-if="upload.hasSelectedFiles" class="sel-list">
@@ -98,17 +120,6 @@ const speedText = () => {
             <span>剩余 {{ upload.uploadEta }}</span>
           </div>
         </div>
-
-        <button
-          v-if="upload.hasSelectedFiles && !upload.isUploading"
-          class="btn-upload"
-          @click="startUpload"
-        >
-          开始上传
-          <span class="btn-upload-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          </span>
-        </button>
       </div>
     </div>
   </Transition>

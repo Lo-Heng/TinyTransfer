@@ -1,17 +1,41 @@
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useDevicesStore } from '@/stores/devices'
 
 const auth = useAuthStore()
 const devices = useDevicesStore()
 
+const flyoutRef = ref<HTMLElement | null>(null)
+
 function isLocal(ip: string) {
   return ip === '127.0.0.1' || ip === '::1'
 }
+
+function handleClickOutside(e: MouseEvent) {
+  if (!flyoutRef.value) return
+  const target = e.target as HTMLElement
+  if (flyoutRef.value.contains(target)) return
+  if (target.closest('.conn-indicator')) return
+  devices.closeFlyout()
+}
+
+watch(() => devices.flyoutOpen, (isOpen) => {
+  if (isOpen) {
+    document.addEventListener('mousedown', handleClickOutside)
+  } else {
+    document.removeEventListener('mousedown', handleClickOutside)
+  }
+})
+
+onUnmounted(() => {
+  document.removeEventListener('mousedown', handleClickOutside)
+})
 </script>
 
 <template>
   <div
+    ref="flyoutRef"
     v-if="auth.userRole === 'host'"
     class="flyout host-only"
     :class="{ open: devices.flyoutOpen }"

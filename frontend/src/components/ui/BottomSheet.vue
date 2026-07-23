@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useDownload } from '@/composables/useDownload'
+import { useUiStore } from '@/stores/ui'
 
 const emit = defineEmits<{
   (e: 'confirm-delete', filename: string): void
 }>()
 
 const { downloadSingleFile } = useDownload()
+const ui = useUiStore()
 
 const open = ref(false)
 const currentFilename = ref('')
@@ -27,9 +29,20 @@ async function action(type: string) {
   if (type === 'download') {
     downloadSingleFile(name)
   } else if (type === 'share') {
-    try {
-      if (navigator.share) await navigator.share({ title: name, url: '/api/download/' + encodeURIComponent(name) })
-    } catch (e) { /* ignored */ }
+    const shareUrl = window.location.origin + '/api/download/' + encodeURIComponent(name)
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: name, url: shareUrl })
+      } catch (e) { /* 用户取消 */ }
+    } else {
+      // 不支持原生分享时,改为复制链接
+      try {
+        await navigator.clipboard.writeText(shareUrl)
+        ui.showToast('链接已复制', 'success')
+      } catch (e) {
+        ui.showToast('复制失败,请手动复制', 'error')
+      }
+    }
   } else if (type === 'delete') {
     emit('confirm-delete', name)
   }
@@ -40,8 +53,8 @@ defineExpose({ show, close })
 
 <template>
   <Transition name="sheet">
-    <div v-if="open" class="bottom-sheet-overlay" @click="close">
-      <div class="bottom-sheet" @click.stop>
+    <div v-if="open" class="bottom-sheet-overlay" @click.self="close">
+      <div class="bottom-sheet">
         <div class="bottom-sheet-handle"></div>
         <div class="bottom-sheet-item" @click="action('download')">
           <svg class="bs-icon" viewBox="0 0 24 24">
