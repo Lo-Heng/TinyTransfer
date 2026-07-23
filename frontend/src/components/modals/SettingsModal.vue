@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch, onUnmounted } from 'vue'
 import { useThemeStore } from '@/stores/theme'
+import { useSpeedTest } from '@/composables/useSpeedTest'
 import { openFolder } from '@/api/system'
 
 const emit = defineEmits<{
@@ -46,15 +47,45 @@ function showGuide() {
   close()
 }
 
-// 速度调试状态
+// 速度调试 — 接入真实测速实现
 const activeTab = ref<'network' | 'test' | 'history'>('network')
 function switchTab(tab: 'network' | 'test' | 'history') {
   activeTab.value = tab
 }
-const testSpeed = ref('--')
-const testStatus = ref('点击开始测试')
-const testProgress = ref(0)
-function runSpeedTest() { /* 占位 */ }
+const {
+  speedTestHistory,
+  isSpeedTesting,
+  speedTestStatus,
+  speedTestProgress,
+  downloadSpeed,
+  uploadSpeed,
+  showSpeedValues,
+  startBothSpeedTest,
+  clearSpeedTestHistory,
+} = useSpeedTest()
+
+async function runSpeedTest() {
+  if (isSpeedTesting.value) return
+  await startBothSpeedTest(10)
+}
+
+// Escape 键关闭 + 锁定外部滚动
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && !isSpeedTesting.value) close()
+}
+watch(open, (isOpen) => {
+  if (isOpen) {
+    window.addEventListener('keydown', onKeydown)
+    document.body.style.overflow = 'hidden'
+  } else {
+    window.removeEventListener('keydown', onKeydown)
+    document.body.style.overflow = ''
+  }
+})
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKeydown)
+  document.body.style.overflow = ''
+})
 
 defineExpose({ show, close })
 </script>
@@ -65,6 +96,9 @@ defineExpose({ show, close })
       v-if="open"
       class="modal-overlay"
       style="z-index: var(--z-modal);"
+      role="dialog"
+      aria-modal="true"
+      aria-label="设置"
       @click.self="close"
     >
       <div class="modal-sheet settings-modal">
@@ -321,12 +355,10 @@ defineExpose({ show, close })
             <!-- Network Info Tab -->
             <div v-show="activeTab === 'network'" class="debug-tab-content">
               <div class="debug-card">
-                <div class="debug-card-title">理论速度（网络信息）</div>
+                <div class="debug-card-title">连接状态</div>
                 <div class="debug-rows">
-                  <div class="debug-row"><span class="debug-row-label">连接类型</span><span class="debug-row-value">检测中...</span></div>
-                  <div class="debug-row"><span class="debug-row-label">估计带宽</span><span class="debug-row-value">--</span></div>
-                  <div class="debug-row"><span class="debug-row-label">有效 RTT</span><span class="debug-row-value">--</span></div>
-                  <div class="debug-row"><span class="debug-row-label">理论上传速度</span><span class="debug-row-value accent">--</span></div>
+                  <div class="debug-row"><span class="debug-row-label">下载速度</span><span class="debug-row-value accent">{{ showSpeedValues ? (downloadSpeed.value + ' ' + downloadSpeed.unit) : '未测试' }}</span></div>
+                  <div class="debug-row"><span class="debug-row-label">上传速度</span><span class="debug-row-value accent">{{ showSpeedValues ? (uploadSpeed.value + ' ' + uploadSpeed.unit) : '未测试' }}</span></div>
                 </div>
               </div>
               <div class="debug-card">
@@ -342,23 +374,24 @@ defineExpose({ show, close })
             <!-- Speed Test Tab -->
             <div v-show="activeTab === 'test'" class="debug-tab-content">
               <div class="debug-card">
-                <div class="debug-card-title">速度测试（50MB × 3轮）</div>
+                <div class="debug-card-title">速度测试（下载 + 上传各 10MB）</div>
                 <div class="debug-test-center">
-                  <div class="debug-test-speed">{{ testSpeed }}</div>
-                  <div class="debug-test-status">{{ testStatus }}</div>
+                  <div class="debug-test-speed">{{ speedTestProgress.speedText || '--' }}</div>
+                  <div class="debug-test-status">{{ speedTestStatus || (isSpeedTesting ? '测试中...' : '点击开始测试') }}</div>
                   <div class="debug-test-progress">
-                    <div class="debug-test-progress-bar" :style="{ width: testProgress + '%' }"></div>
+                    <div class="debug-test-progress-bar" :style="{ width: speedTestProgress.percent + '%' }"></div>
                   </div>
-                  <button class="debug-test-btn" @click="runSpeedTest">开始测试</button>
+                  <button class="debug-test-btn" :disabled="isSpeedTesting" @click="runSpeedTest">
+                    {{ isSpeedTesting ? '测试中' : '开始测试' }}
+                  </button>
                 </div>
               </div>
               <div class="debug-card">
                 <div class="debug-card-title">测试结果</div>
                 <div class="debug-rows">
-                  <div class="debug-row"><span class="debug-row-label">实际上传速度</span><span class="debug-row-value bold">--</span></div>
-                  <div class="debug-row"><span class="debug-row-label">理论速度</span><span class="debug-row-value">--</span></div>
-                  <div class="debug-row"><span class="debug-row-label">带宽利用率</span><span class="debug-row-value bold">--</span></div>
-                  <div class="debug-row"><span class="debug-row-label">3轮范围</span><span class="debug-row-value small">--</span></div>
+                  <div class="debug-row"><span class="debug-row-label">下载速度</span><span class="debug-row-value bold">{{ showSpeedValues ? (downloadSpeed.value + ' ' + downloadSpeed.unit) : '--' }}</span></div>
+                  <div class="debug-row"><span class="debug-row-label">上传速度</span><span class="debug-row-value bold">{{ showSpeedValues ? (uploadSpeed.value + ' ' + uploadSpeed.unit) : '--' }}</span></div>
+                  <div class="debug-row"><span class="debug-row-label">进度</span><span class="debug-row-value">{{ speedTestProgress.percent.toFixed(0) }}%</span></div>
                 </div>
               </div>
             </div>
@@ -366,8 +399,18 @@ defineExpose({ show, close })
             <!-- Upload History Tab -->
             <div v-show="activeTab === 'history'" class="debug-tab-content">
               <div class="debug-card">
-                <div class="debug-card-title">最近上传记录</div>
-                <div class="debug-empty">暂无上传记录</div>
+                <div class="debug-card-title">
+                  最近测速记录
+                  <button v-if="speedTestHistory.length > 0" class="debug-clear-btn" @click="clearSpeedTestHistory">清空</button>
+                </div>
+                <div v-if="speedTestHistory.length === 0" class="debug-empty">暂无测速记录</div>
+                <div v-else class="debug-rows">
+                  <div v-for="(item, i) in speedTestHistory" :key="i" class="debug-row">
+                    <span class="debug-row-label">{{ item.type }}</span>
+                    <span class="debug-row-value">{{ item.speed }} · {{ item.size }}</span>
+                    <span class="debug-row-time">{{ item.time }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

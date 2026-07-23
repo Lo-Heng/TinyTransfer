@@ -16,6 +16,8 @@ function updatePosition() {
   const target = document.querySelector(step.target) as HTMLElement
   if (!target) return
 
+  target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+
   const rect = target.getBoundingClientRect()
   const padding = step.padding ?? 12
 
@@ -90,6 +92,8 @@ function updatePosition() {
     }
     cardArrowPosition.value = arrowPos
   })
+
+  setTimeout(updatePosition, 450)
 }
 
 let resizeTimer: number | null = null

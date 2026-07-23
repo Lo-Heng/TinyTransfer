@@ -3,6 +3,7 @@
 
 import { useDevicesStore } from '@/stores/devices'
 import { useFilesStore } from '@/stores/files'
+import { useUiStore } from '@/stores/ui'
 import * as devicesApi from '@/api/devices'
 
 // 模块级单例状态（SSE 连接全局唯一）
@@ -99,6 +100,11 @@ export function connectSSE() {
     es.close()
     stopPing()
     devices.sseClientId = null
+    // 重连延迟超过 1s 时提示用户(避免短暂抖动反复 toast)
+    if (reconnectDelay >= 1000) {
+      const ui = useUiStore()
+      ui.showToast('连接已断开,正在重连...', 'error')
+    }
     scheduleReconnect(connectSSE)
   }
 }

@@ -152,7 +152,7 @@
 .guide-btn-next {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 9px 18px;
-    border-radius: var(--r-sm);
+    border-radius: var(--r-full);
     font-size: var(--text-sm);
     font-weight: 600;
     letter-spacing: -0.01em;
@@ -160,13 +160,15 @@
     color: #fff;
     border: none;
     cursor: pointer;
-    transition: background var(--dur-fast) var(--ease-out);
+    transition: background var(--dur-fast) var(--ease-out),
+                transform var(--dur-fast) var(--ease-out);
 }
 .guide-btn-next:hover {
     background: #333333;
 }
 .guide-btn-next:active {
     background: #000000;
+    transform: scale(0.96);
 }
 .guide-card.dark .guide-btn-next {
     background: #F5F5F5;
@@ -174,3 +176,31 @@
 }
 .guide-card.dark .guide-btn-next:hover { background: #DDDDDD; }
 .guide-card.dark .guide-btn-next:active { background: #FFFFFF; }
+
+.guide-btn-prev {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 16px;
+    border-radius: var(--r-full);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    background: rgba(0,0,0,0.08);
+    color: #111111;
+    border: none;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-out),
+                transform var(--dur-fast) var(--ease-out);
+}
+.guide-btn-prev:hover {
+    background: rgba(0,0,0,0.14);
+}
+.guide-btn-prev:active {
+    background: rgba(0,0,0,0.2);
+    transform: scale(0.96);
+}
+.guide-card.dark .guide-btn-prev {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+}
+.guide-card.dark .guide-btn-prev:hover { background: rgba(255,255,255,0.22); }
+.guide-card.dark .guide-btn-prev:active { background: rgba(255,255,255,0.28); }

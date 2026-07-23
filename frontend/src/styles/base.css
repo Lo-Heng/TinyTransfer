@@ -129,20 +129,23 @@
 
         /* Focus visible — accessible & polished */
         :focus-visible {
-            outline: none;
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+            border-radius: var(--r-xs);
         }
         button:focus-visible,
         .chip:focus-visible,
         .file-card:focus-visible,
         .topbar-btn:focus-visible {
-            box-shadow: none;
-            transition: none;
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
         }
         html.dark button:focus-visible,
         html.dark .chip:focus-visible,
         html.dark .file-card:focus-visible,
         html.dark .topbar-btn:focus-visible {
-            box-shadow: none;
+            outline: 2px solid var(--accent-400);
+            outline-offset: 2px;
         }
 
         /* Role visibility */
